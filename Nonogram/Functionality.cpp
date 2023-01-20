@@ -6,7 +6,7 @@ MAIN_MENU_LENGTH = 4,
 INPUT_MAX_LEGTH = 100,
 BUFFER_SIZE = 100;
 
-const char ESCAPE_CHAR = '3';
+const char EXIT_CHAR = '3';
 const char INVALID_INPUT_ERROR[] = "Error: Invalid input. Press Enter to continue.\n";
 const char LOGIN_ERROR[] = "Error: Username is not registered.\n";
 const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
@@ -14,6 +14,8 @@ const char REGISTER_PROMPT[] = "Enter the username you want to register: ";
 const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
 const char ALL_USERNAMES_PATH[] = "users/allUsernames.txt";
+const char USERNAME_PARENT_FOLDER[] = "users/";
+const char USERNAME_FILE_EXTENTION[] = ".txt";
 
 void ClearConsole() {
 	system("cls");
@@ -86,24 +88,24 @@ bool UsernameExists(const char* username, int usernameLength) {
 		return false;
 	}
 
-	std::ifstream stream(ALL_USERNAMES_PATH);
+	std::ifstream reader(ALL_USERNAMES_PATH);
 
-	if (!stream.is_open()) {
+	if (!reader.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
 		return false;
 	}
 
 	char buffer[BUFFER_SIZE]{};
-	while (!stream.eof()) {
-		stream.getline(buffer, BUFFER_SIZE);
+	while (!reader.eof()) {
+		reader.getline(buffer, BUFFER_SIZE);
 
 		if (StringsAreEqual(username, usernameLength, buffer, BUFFER_SIZE)) {
-			stream.close();
+			reader.close();
 			return true;
 		}
 	}
 
-	stream.close();
+	reader.close();
 	return false;
 }
 
@@ -113,15 +115,15 @@ void RegisterUser(const char* username) {
 		return;
 	}
 
-	std::ofstream stream(ALL_USERNAMES_PATH, std::ios::app);
+	std::ofstream writer(ALL_USERNAMES_PATH, std::ios::app);
 
-	if (!stream.is_open()) {
+	if (!writer.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
 		return;
 	}
 
-	stream << username << std::endl;
-	stream.close();
+	writer << username << std::endl;
+	writer.close();
 }
 
 void CopyString(const char* source, int sourceLength, char* destination, int destinationLength) {
@@ -183,7 +185,76 @@ const char** NewMainMenu(const char* username) {
 	return MAIN_MENU;
 }
 
+int LengthOf(const char* string) {
+	if (string == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return -1;
+	}
+
+	int length = 0;
+
+	for (size_t i = 0; string[i] != '\0'; i++) {
+		length++;
+	}
+
+	return length;
+}
+
+char* GetUserTxtPath(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return nullptr;
+	}
+
+	char* userTxtPath = new char[LengthOf(USERNAME_PARENT_FOLDER) + LengthOf(username) + LengthOf(USERNAME_FILE_EXTENTION) + 1] {};
+	int currentIndex = 0;
+
+	for (size_t i = 0; USERNAME_PARENT_FOLDER[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = USERNAME_PARENT_FOLDER[i];
+	}
+	for (size_t i = 0; username[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = username[i];
+	}
+	for (size_t i = 0; USERNAME_FILE_EXTENTION[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = USERNAME_FILE_EXTENTION[i];
+	}
+
+	return userTxtPath;
+}
+
+void ContinueLastNonogram(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return;
+	}
+
+	char* userTxtPath = GetUserTxtPath(username);
+
+	std::ifstream reader(userTxtPath);
+
+	if (!reader.is_open()) {
+		std::wcout << FILE_NOT_FOUND_ERROR;
+		return;
+	}
+
+	delete[] userTxtPath;
+}
+
+void StartNewNonogram(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return;
+	}
+
+	//TODO
+}
+
 void MainMenu(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return;
+	}
+
 	const char** MAIN_MENU = NewMainMenu(username);
 	char userInput[INPUT_MAX_LEGTH]{};
 
@@ -199,16 +270,16 @@ void MainMenu(const char* username) {
 
 		switch (userInput[0]) {
 			case '1':
-				//Continue();
+				ContinueLastNonogram(username);
 				break;
 			case '2':
-				//Start new Nonogram();
+				StartNewNonogram(username);
 				break;
 			default:
 				break;
 		}
 
-	} while (userInput[0] != ESCAPE_CHAR);
+	} while (userInput[0] != EXIT_CHAR);
 
 	std::cout << "\nHave a great day, " << username << "!\n";
 
@@ -216,7 +287,7 @@ void MainMenu(const char* username) {
 }
 
 void StartProgram() {
-	char* username = new char[INPUT_MAX_LEGTH];
+	char* username = new char[INPUT_MAX_LEGTH] {};
 
 	LoginMenu(username);
 	MainMenu(username);
