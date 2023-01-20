@@ -364,7 +364,8 @@ void MainMenu(const char* username) {
 
 	} while (userInput[0] != EXIT_CHAR);
 
-	std::cout << "\nHave a great day, " << username << "!\n";
+	ClearConsole();
+	std::cout << "Have a great day, " << username << "!\n";
 
 	DeallocateMenuMemory(MAIN_MENU);
 }
