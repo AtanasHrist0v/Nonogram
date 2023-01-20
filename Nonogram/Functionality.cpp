@@ -1,21 +1,33 @@
 #include <iostream>
 #include <fstream>
 
-const int LOGIN_MENU_LENGTH = 1,
-MAIN_MENU_LENGTH = 4,
-INPUT_MAX_LEGTH = 100,
-BUFFER_SIZE = 100;
+const int LOGIN_MENU_LENGTH = 1;
+const int MAIN_MENU_LENGTH = 4;
+const int INPUT_MAX_LEGTH = 100;
+const int BUFFER_SIZE = 100;
+const int FIRST_LEVEL = 1;
+const int NUMBER_OF_LEVELS = 5;
+const int NONOGRAMS_PER_LEVEL = 2;
 
 const char EXIT_CHAR = '3';
+const char ZERO_CHAR = '0';
 const char INVALID_INPUT_ERROR[] = "Error: Invalid input. Press Enter to continue.\n";
 const char LOGIN_ERROR[] = "Error: Username is not registered.\n";
 const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
 const char REGISTER_PROMPT[] = "Enter the username you want to register: ";
 const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
+const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
+const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
 const char ALL_USERNAMES_PATH[] = "users/allUsernames.txt";
 const char USERNAME_PARENT_FOLDER[] = "users/";
 const char USERNAME_FILE_EXTENTION[] = ".txt";
+const char LEVEL_1_PARENT_FOLDER[] = "levels/1/";
+const char LEVEL_2_PARENT_FOLDER[] = "levels/2/";
+const char LEVEL_3_PARENT_FOLDER[] = "levels/3/";
+const char LEVEL_4_PARENT_FOLDER[] = "levels/4/";
+const char LEVEL_5_PARENT_FOLDER[] = "levels/5/";
+const char LEVELS_FILE_EXTENTION[] = ".txt";
 
 void ClearConsole() {
 	system("cls");
@@ -91,8 +103,15 @@ bool UsernameExists(const char* username, int usernameLength) {
 	std::ifstream reader(ALL_USERNAMES_PATH);
 
 	if (!reader.is_open()) {
-		std::cout << FILE_NOT_FOUND_ERROR;
-		return false;
+		std::ofstream writer(ALL_USERNAMES_PATH);
+
+		if (!writer.is_open()) {
+			std::cout << COULDNT_WRITE_TO_FILE_ERROR;
+			return false;
+		}
+
+		writer.close();
+		reader.clear();
 	}
 
 	char buffer[BUFFER_SIZE]{};
@@ -118,7 +137,7 @@ void RegisterUser(const char* username) {
 	std::ofstream writer(ALL_USERNAMES_PATH, std::ios::app);
 
 	if (!writer.is_open()) {
-		std::cout << FILE_NOT_FOUND_ERROR;
+		std::cout << COULDNT_WRITE_TO_FILE_ERROR;
 		return;
 	}
 
@@ -200,26 +219,74 @@ int LengthOf(const char* string) {
 	return length;
 }
 
+char* GetTxtPath(const char* PARENT_FOLDERS_PATH, const char* FILE_NAME, const char* FILE_EXTENTION) {
+	if (PARENT_FOLDERS_PATH == nullptr || FILE_NAME == nullptr || FILE_EXTENTION == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return nullptr;
+	}
+
+	char* userTxtPath = new char[LengthOf(PARENT_FOLDERS_PATH) + LengthOf(FILE_NAME) + LengthOf(FILE_EXTENTION) + 1] {};
+	int currentIndex = 0;
+
+	for (size_t i = 0; PARENT_FOLDERS_PATH[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = PARENT_FOLDERS_PATH[i];
+	}
+	for (size_t i = 0; FILE_NAME[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = FILE_NAME[i];
+	}
+	for (size_t i = 0; FILE_EXTENTION[i] != '\0'; i++, currentIndex++) {
+		userTxtPath[currentIndex] = FILE_EXTENTION[i];
+	}
+
+	return userTxtPath;
+}
+
 char* GetUserTxtPath(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
 		return nullptr;
 	}
 
-	char* userTxtPath = new char[LengthOf(USERNAME_PARENT_FOLDER) + LengthOf(username) + LengthOf(USERNAME_FILE_EXTENTION) + 1] {};
-	int currentIndex = 0;
-
-	for (size_t i = 0; USERNAME_PARENT_FOLDER[i] != '\0'; i++, currentIndex++) {
-		userTxtPath[currentIndex] = USERNAME_PARENT_FOLDER[i];
-	}
-	for (size_t i = 0; username[i] != '\0'; i++, currentIndex++) {
-		userTxtPath[currentIndex] = username[i];
-	}
-	for (size_t i = 0; USERNAME_FILE_EXTENTION[i] != '\0'; i++, currentIndex++) {
-		userTxtPath[currentIndex] = USERNAME_FILE_EXTENTION[i];
-	}
+	char* userTxtPath = GetTxtPath(USERNAME_PARENT_FOLDER, username, USERNAME_FILE_EXTENTION);
 
 	return userTxtPath;
+}
+
+inline char IntToChar(int number) {
+	return number + ZERO_CHAR;
+}
+
+char** RandomNonogram(int difficultyLevel = 1) {
+	char difficultyLevelAsCharArray[2]{};
+	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
+
+	char* currentLevelPath;
+	
+	switch (difficultyLevel) {
+		case 1:
+			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+			break;
+		case 2:
+			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+			break;
+		case 3:
+			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+			break;
+		case 4:
+			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+			break;
+		case 5:
+			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+			break;
+		default:
+			std::cout << DIFFICULTY_LEVEL_ERROR;
+			currentLevelPath = new char[0];
+			break;
+	}
+
+	//TODO
+
+	delete[] currentLevelPath;
 }
 
 void ContinueLastNonogram(const char* username) {
@@ -233,9 +300,25 @@ void ContinueLastNonogram(const char* username) {
 	std::ifstream reader(userTxtPath);
 
 	if (!reader.is_open()) {
-		std::wcout << FILE_NOT_FOUND_ERROR;
-		return;
+		std::ofstream writer(userTxtPath);
+
+		if (!writer.is_open()) {
+			std::cout << COULDNT_WRITE_TO_FILE_ERROR;
+			return;
+		}
+
+		char** newNonogram = RandomNonogram();
+
+		writer << FIRST_LEVEL << std::endl;
+		writer << newNonogram;
+
+		delete[] newNonogram;
+
+		writer.close();
+		reader.clear();
 	}
+
+	//TODO
 
 	delete[] userTxtPath;
 }
@@ -279,6 +362,9 @@ void MainMenu(const char* username) {
 				break;
 		}
 
+		std::cout << INVALID_INPUT_ERROR;
+		std::cin.getline(userInput, 100);
+
 	} while (userInput[0] != EXIT_CHAR);
 
 	std::cout << "\nHave a great day, " << username << "!\n";
@@ -287,6 +373,8 @@ void MainMenu(const char* username) {
 }
 
 void StartProgram() {
+	srand(time(0));
+
 	char* username = new char[INPUT_MAX_LEGTH] {};
 
 	LoginMenu(username);
