@@ -256,38 +256,38 @@ inline char IntToChar(int number) {
 	return number + ZERO_CHAR;
 }
 
-char** RandomNonogram(int difficultyLevel = 1) {
-	char difficultyLevelAsCharArray[2]{};
-	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
-
-	char* currentLevelPath;
-	
-	switch (difficultyLevel) {
-		case 1:
-			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
-			break;
-		case 2:
-			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
-			break;
-		case 3:
-			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
-			break;
-		case 4:
-			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
-			break;
-		case 5:
-			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
-			break;
-		default:
-			std::cout << DIFFICULTY_LEVEL_ERROR;
-			currentLevelPath = new char[0];
-			break;
-	}
-
-	//TODO
-
-	delete[] currentLevelPath;
-}
+//char** RandomNonogram(int difficultyLevel = 1) {
+//	char difficultyLevelAsCharArray[2]{};
+//	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
+//
+//	char* currentLevelPath;
+//	
+//	switch (difficultyLevel) {
+//		case 1:
+//			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			break;
+//		case 2:
+//			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			break;
+//		case 3:
+//			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			break;
+//		case 4:
+//			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			break;
+//		case 5:
+//			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			break;
+//		default:
+//			std::cout << DIFFICULTY_LEVEL_ERROR;
+//			currentLevelPath = new char[0];
+//			break;
+//	}
+//
+//	//TODO
+//
+//	delete[] currentLevelPath;
+//}
 
 void ContinueLastNonogram(const char* username) {
 	if (username == nullptr) {
@@ -307,12 +307,12 @@ void ContinueLastNonogram(const char* username) {
 			return;
 		}
 
-		char** newNonogram = RandomNonogram();
+		//char** newNonogram = RandomNonogram();
 
 		writer << FIRST_LEVEL << std::endl;
-		writer << newNonogram;
+		//writer << newNonogram;
 
-		delete[] newNonogram;
+		//delete[] newNonogram;
 
 		writer.close();
 		reader.clear();
