@@ -362,9 +362,6 @@ void MainMenu(const char* username) {
 				break;
 		}
 
-		std::cout << INVALID_INPUT_ERROR;
-		std::cin.getline(userInput, 100);
-
 	} while (userInput[0] != EXIT_CHAR);
 
 	std::cout << "\nHave a great day, " << username << "!\n";
