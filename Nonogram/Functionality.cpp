@@ -332,7 +332,7 @@ void StartNewNonogram(const char* username) {
 	//TODO
 }
 
-void MainMenu(const char* username) {
+char MainMenu(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
 		return;
@@ -364,10 +364,31 @@ void MainMenu(const char* username) {
 
 	} while (userInput[0] != EXIT_CHAR);
 
+	DeallocateMenuMemory(MAIN_MENU);
+
+	return userInput[0];
+}
+
+void StartGame(const char* username) {
+	char mainMenuChoice = '\0';
+	
+	do {
+		mainMenuChoice = MainMenu(username);
+
+		switch (mainMenuChoice) {
+			case 1:
+				ContinueLastNonogram(username);
+				break;
+			case 2:
+				StartNewNonogram(username);
+				break;
+			default:
+				break;
+		}
+	} while (mainMenuChoice != EXIT_CHAR);
+
 	ClearConsole();
 	std::cout << "Have a great day, " << username << "!\n";
-
-	DeallocateMenuMemory(MAIN_MENU);
 }
 
 void StartProgram() {
@@ -376,7 +397,7 @@ void StartProgram() {
 	char* username = new char[INPUT_MAX_LEGTH] {};
 
 	LoginMenu(username);
-	MainMenu(username);
+	StartGame(username);
 
 	delete[] username;
 }
