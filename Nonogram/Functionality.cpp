@@ -11,10 +11,10 @@ const int NONOGRAMS_PER_LEVEL = 2;
 
 const char EXIT_CHAR = '3';
 const char ZERO_CHAR = '0';
-const char INVALID_INPUT_ERROR[] = "Error: Invalid input. Press Enter to continue.\n";
-const char LOGIN_ERROR[] = "Error: Username is not registered.\n";
 const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
 const char REGISTER_PROMPT[] = "Enter the username you want to register: ";
+const char INVALID_INPUT_ERROR[] = "Error: Invalid input. Press Enter to continue.\n";
+const char LOGIN_ERROR[] = "Error: Username is not registered.\n";
 const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
@@ -332,10 +332,26 @@ void StartNewNonogram(const char* username) {
 	//TODO
 }
 
+bool UserInputIsCorrect(const char* userInput, int menuLength) {
+	if (userInput == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return false;
+	}
+
+	switch (userInput[0]) {
+		case '1':
+		case '2':
+		case '3':
+			return true;
+		default:
+			return false;
+	}
+}
+
 char MainMenu(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
-		return;
+		return '\0';
 	}
 
 	const char** MAIN_MENU = NewMainMenu(username);
@@ -345,24 +361,7 @@ char MainMenu(const char* username) {
 		DisplayMenu(MAIN_MENU, MAIN_MENU_LENGTH);
 		std::cin.getline(userInput, 100);
 
-		if (userInput[1] != '\0') {
-			std::cout << INVALID_INPUT_ERROR;
-			std::cin.getline(userInput, 100);
-			continue;
-		}
-
-		switch (userInput[0]) {
-			case '1':
-				ContinueLastNonogram(username);
-				break;
-			case '2':
-				StartNewNonogram(username);
-				break;
-			default:
-				break;
-		}
-
-	} while (userInput[0] != EXIT_CHAR);
+	} while (!UserInputIsCorrect(userInput, MAIN_MENU_LENGTH));
 
 	DeallocateMenuMemory(MAIN_MENU);
 
@@ -371,15 +370,15 @@ char MainMenu(const char* username) {
 
 void StartGame(const char* username) {
 	char mainMenuChoice = '\0';
-	
+
 	do {
 		mainMenuChoice = MainMenu(username);
 
 		switch (mainMenuChoice) {
-			case 1:
+			case '1':
 				ContinueLastNonogram(username);
 				break;
-			case 2:
+			case '2':
 				StartNewNonogram(username);
 				break;
 			default:
