@@ -196,8 +196,6 @@ void LoginMenu(char* USERNAME) {
 
 	} while (!usernameExists);
 
-	//CopyString(userInput, INPUT_MAX_LENGTH, USERNAME, INPUT_MAX_LENGTH);
-
 	DeallocateMenuMemory(LOGIN_MENU);
 }
 
@@ -258,26 +256,40 @@ void ContinueLastNonogram(const char* USERNAME) {
 
 	std::ifstream reader(userTxtPath);
 
+	//if (!reader.is_open()) {
+	//	std::ofstream writer(userTxtPath);
+
+	//	if (!writer.is_open()) {
+	//		std::cout << COULDNT_WRITE_TO_FILE_ERROR;
+	//		return;
+	//	}
+
+	//	//char** newNonogram = RandomNonogram();
+
+	//	writer << FIRST_LEVEL << std::endl;
+	//	//writer << newNonogram;
+
+	//	//delete[] newNonogram;
+
+	//	writer.close();
+	//	reader.clear();
+	//}
+
 	if (!reader.is_open()) {
-		std::ofstream writer(userTxtPath);
+		std::cout << FILE_NOT_FOUND_ERROR;
+		return;
+	}
 
-		if (!writer.is_open()) {
-			std::cout << COULDNT_WRITE_TO_FILE_ERROR;
-			return;
-		}
+	char currentLine[INPUT_MAX_LENGTH]{};
 
-		//char** newNonogram = RandomNonogram();
-
-		writer << FIRST_LEVEL << std::endl;
-		//writer << newNonogram;
-
-		//delete[] newNonogram;
-
-		writer.close();
-		reader.clear();
+	while (!reader.eof()) {
+		//TODO
+		//Get difficulty level
+		//Get nonogram
 	}
 
 	//TODO
+	//Start game on the nonogram
 
 	delete[] userTxtPath;
 }
@@ -289,6 +301,9 @@ void StartNewNonogram(const char* USERNAME) {
 	}
 
 	//TODO
+	//Read <username>.txt
+	//If empty -> choose RNG lvl 1 nonogram and insert into file
+	//After that game starts
 }
 
 bool UserInputIsCorrect(const char* userInput, int menuLength) {
