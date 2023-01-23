@@ -14,8 +14,8 @@ const char ZERO_CHAR = '0';
 const char TERMINATING_ZERO_CHAR = '\0';
 const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
 const char REGISTER_PROMPT[] = "Enter the username you want to register: ";
-const char INVALID_INPUT_ERROR[] = "Error: Invalid input. Press Enter to continue.\n";
-const char LOGIN_ERROR[] = "Error: Username is not registered.\n";
+const char INVALID_INPUT_ERROR[] = "Error: Invalid input.\n";
+const char LOGIN_ERROR[] = "Username is not registered.\n";
 const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
@@ -68,6 +68,10 @@ bool UsernameIsValid(const char* username) {
 	}
 
 	return true;
+}
+
+void PauseConsole() {
+	system("pause");
 }
 
 int LengthOf(const char* string) {
@@ -173,7 +177,7 @@ void LoginMenu(char* username) {
 
 		if (!UsernameIsValid(username)) {
 			std::cout << INVALID_INPUT_ERROR;
-			std::cin.getline(username, 100); //If not for this get getline(), DisplayMenu() would clear the console and the user won't see that his input is invalid.
+			PauseConsole();
 			continue;
 		}
 
@@ -390,8 +394,8 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	//After that game starts
 }
 
-char PlayNonogram(char** nonogram, int& difficultyLevel) {
-	return TERMINATING_ZERO_CHAR;
+void PlayNonogram(char** nonogram, int& difficultyLevel) {
+	
 }
 
 void StartGame(const char* username) {
@@ -402,9 +406,18 @@ void StartGame(const char* username) {
 	do {
 		mainMenuChoice = MainMenu(username);
 
+		if (mainMenuChoice == EXIT_CHAR) {
+			break;
+		}
+
 		switch (mainMenuChoice) {
 			case '1':
 				ContinueLastNonogram(username, difficultyLevel, nonogram);
+
+				if (difficultyLevel == 0) {
+					std::cout << "Can't coutinue cuz no saved game bro.\n";
+				}
+
 				break;
 			case '2':
 				StartNewNonogram(username, difficultyLevel, nonogram);
@@ -413,11 +426,7 @@ void StartGame(const char* username) {
 				break;
 		}
 
-		if (mainMenuChoice == EXIT_CHAR) {
-			break;
-		}
-
-		mainMenuChoice = PlayNonogram(nonogram, difficultyLevel);
+		PlayNonogram(nonogram, difficultyLevel);
 
 	} while (mainMenuChoice != EXIT_CHAR);
 
