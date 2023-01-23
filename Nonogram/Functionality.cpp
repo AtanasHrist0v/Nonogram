@@ -213,6 +213,10 @@ bool UserInputIsCorrect(const char* userInput, int menuLength) {
 		return false;
 	}
 
+	if (userInput[1] != TERMINATING_ZERO_CHAR) {
+		return false;
+	}
+
 	switch (userInput[0]) {
 		case '1':
 		case '2':
