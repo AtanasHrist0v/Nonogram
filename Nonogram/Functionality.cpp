@@ -19,15 +19,14 @@ const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
 const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
-const char ALL_USERNAMES_PATH[] = "users/allUsernames.txt";
+const char ALL_USERNAMES_PATH[] = "users/allUsernames.txt";//unnecessary
 const char USERNAME_PARENT_FOLDER[] = "users/";
-const char USERNAME_FILE_EXTENTION[] = ".txt";
 const char LEVEL_1_PARENT_FOLDER[] = "levels/1/";
 const char LEVEL_2_PARENT_FOLDER[] = "levels/2/";
 const char LEVEL_3_PARENT_FOLDER[] = "levels/3/";
 const char LEVEL_4_PARENT_FOLDER[] = "levels/4/";
 const char LEVEL_5_PARENT_FOLDER[] = "levels/5/";
-const char LEVELS_FILE_EXTENTION[] = ".txt";
+const char TEXT_FILE_EXTENTION[] = ".txt";
 
 void ClearConsole() {
 	system("cls");
@@ -247,7 +246,7 @@ char* GetUserTxtPath(const char* username) {
 		return nullptr;
 	}
 
-	char* userTxtPath = GetTxtPath(USERNAME_PARENT_FOLDER, username, USERNAME_FILE_EXTENTION);
+	char* userTxtPath = GetTxtPath(USERNAME_PARENT_FOLDER, username, TEXT_FILE_EXTENTION);
 
 	return userTxtPath;
 }
@@ -264,19 +263,19 @@ inline char IntToChar(int number) {
 //	
 //	switch (difficultyLevel) {
 //		case 1:
-//			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
 //			break;
 //		case 2:
-//			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
 //			break;
 //		case 3:
-//			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
 //			break;
 //		case 4:
-//			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
 //			break;
 //		case 5:
-//			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, LEVELS_FILE_EXTENTION);
+//			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
 //			break;
 //		default:
 //			std::cout << DIFFICULTY_LEVEL_ERROR;
