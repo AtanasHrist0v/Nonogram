@@ -20,14 +20,20 @@ const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
 const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
-const char ALL_USERNAMES_PATH[] = "users/allUsernames.txt";//unnecessary
-const char USERNAME_PARENT_FOLDER[] = "users/";
+const char USERS_PARENT_FOLDER[] = "users/";
 const char LEVEL_1_PARENT_FOLDER[] = "levels/1/";
 const char LEVEL_2_PARENT_FOLDER[] = "levels/2/";
 const char LEVEL_3_PARENT_FOLDER[] = "levels/3/";
 const char LEVEL_4_PARENT_FOLDER[] = "levels/4/";
 const char LEVEL_5_PARENT_FOLDER[] = "levels/5/";
 const char TEXT_FILE_EXTENTION[] = ".txt";
+
+const char** NewLoginMenu() {
+	const char** LOGIN_MENU = new const char* [LOGIN_MENU_LENGTH] {};
+	LOGIN_MENU[0] = "Enter your username to login: ";
+
+	return LOGIN_MENU;
+}
 
 void ClearConsole() {
 	system("cls");
@@ -49,17 +55,6 @@ void DisplayMenu(const char** menu, int menuLength) {
 
 		std::cout << menu[i];
 	}
-}
-
-void DeallocateMenuMemory(const char** menu) {
-	delete[] menu;
-}
-
-const char** NewLoginMenu() {
-	const char** LOGIN_MENU = new const char* [LOGIN_MENU_LENGTH] {};
-	LOGIN_MENU[0] = "Enter your username to login: ";
-
-	return LOGIN_MENU;
 }
 
 bool UsernameIsValid(const char* username) {
@@ -118,7 +113,7 @@ char* GetUserTxtPath(const char* username) {
 		return nullptr;
 	}
 
-	char* userTxtPath = GetTxtPath(USERNAME_PARENT_FOLDER, username, TEXT_FILE_EXTENTION);
+	char* userTxtPath = GetTxtPath(USERS_PARENT_FOLDER, username, TEXT_FILE_EXTENTION);
 
 	return userTxtPath;
 }
@@ -161,6 +156,10 @@ void RegisterUser(const char* username) {
 	writer.close();
 
 	delete[] userTxtPath;
+}
+
+void DeallocateMenuMemory(const char** menu) {
+	delete[] menu;
 }
 
 void LoginMenu(char* username) {
@@ -208,50 +207,45 @@ const char** NewMainMenu(const char* username) {
 	return MAIN_MENU;
 }
 
-char PlayNonogram(char** nonogram, int& difficultyLevel) {
+bool UserInputIsCorrect(const char* userInput, int menuLength) {
+	if (userInput == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return false;
+	}
 
+	switch (userInput[0]) {
+		case '1':
+		case '2':
+		case '3':
+			return true;
+		default:
+			return false;
+	}
 }
 
-inline char IntToChar(int number) {
-	return number + ZERO_CHAR;
+char MainMenu(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return TERMINATING_ZERO_CHAR;
+	}
+
+	const char** MAIN_MENU = NewMainMenu(username);
+	char userInput[INPUT_MAX_LENGTH]{};
+
+	do {
+		DisplayMenu(MAIN_MENU, MAIN_MENU_LENGTH);
+		std::cin.getline(userInput, 100);
+
+	} while (!UserInputIsCorrect(userInput, MAIN_MENU_LENGTH));
+
+	DeallocateMenuMemory(MAIN_MENU);
+
+	return userInput[0];
 }
 
 inline int CharToInt(char ch) {
 	return ch - ZERO_CHAR;
 }
-
-//char** RandomNonogram(int difficultyLevel = 1) {
-//	char difficultyLevelAsCharArray[2]{};
-//	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
-//
-//	char* currentLevelPath;
-//	
-//	switch (difficultyLevel) {
-//		case 1:
-//			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
-//			break;
-//		case 2:
-//			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
-//			break;
-//		case 3:
-//			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
-//			break;
-//		case 4:
-//			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
-//			break;
-//		case 5:
-//			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
-//			break;
-//		default:
-//			std::cout << DIFFICULTY_LEVEL_ERROR;
-//			currentLevelPath = new char[0];
-//			break;
-//	}
-//
-//	//TODO
-//
-//	delete[] currentLevelPath;
-//}
 
 void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& nonogram) {
 	if (username == nullptr) {
@@ -309,12 +303,49 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& no
 
 	}
 
-	
+
 
 	reader.close();
 	//TODO
 	//Start game on the nonogram
 }
+
+inline char IntToChar(int number) {
+	return number + ZERO_CHAR;
+}
+
+//char** RandomNonogram(int difficultyLevel = 1) {
+//	char difficultyLevelAsCharArray[2]{};
+//	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
+//
+//	char* currentLevelPath;
+//	
+//	switch (difficultyLevel) {
+//		case 1:
+//			currentLevelPath = GetTxtPath(LEVEL_1_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
+//			break;
+//		case 2:
+//			currentLevelPath = GetTxtPath(LEVEL_2_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
+//			break;
+//		case 3:
+//			currentLevelPath = GetTxtPath(LEVEL_3_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
+//			break;
+//		case 4:
+//			currentLevelPath = GetTxtPath(LEVEL_4_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
+//			break;
+//		case 5:
+//			currentLevelPath = GetTxtPath(LEVEL_5_PARENT_FOLDER, difficultyLevelAsCharArray, TEXT_FILE_EXTENTION);
+//			break;
+//		default:
+//			std::cout << DIFFICULTY_LEVEL_ERROR;
+//			currentLevelPath = new char[0];
+//			break;
+//	}
+//
+//	//TODO
+//
+//	delete[] currentLevelPath;
+//}
 
 void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogram) {
 	if (username == nullptr) {
@@ -355,40 +386,8 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	//After that game starts
 }
 
-bool UserInputIsCorrect(const char* userInput, int menuLength) {
-	if (userInput == nullptr) {
-		std::cout << NULLPTR_ERROR;
-		return false;
-	}
-
-	switch (userInput[0]) {
-		case '1':
-		case '2':
-		case '3':
-			return true;
-		default:
-			return false;
-	}
-}
-
-char MainMenu(const char* username) {
-	if (username == nullptr) {
-		std::cout << NULLPTR_ERROR;
-		return TERMINATING_ZERO_CHAR;
-	}
-
-	const char** MAIN_MENU = NewMainMenu(username);
-	char userInput[INPUT_MAX_LENGTH]{};
-
-	do {
-		DisplayMenu(MAIN_MENU, MAIN_MENU_LENGTH);
-		std::cin.getline(userInput, 100);
-
-	} while (!UserInputIsCorrect(userInput, MAIN_MENU_LENGTH));
-
-	DeallocateMenuMemory(MAIN_MENU);
-
-	return userInput[0];
+char PlayNonogram(char** nonogram, int& difficultyLevel) {
+	return TERMINATING_ZERO_CHAR;
 }
 
 void StartGame(const char* username) {
