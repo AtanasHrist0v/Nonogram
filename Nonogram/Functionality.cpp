@@ -76,26 +76,6 @@ bool UsernameIsValid(const char* USERNAME) {
 	return true;
 }
 
-//unnecessary
-//bool StringsAreEqual(const char* string1, int string1Length, const char* string2, int string2Length) {
-//	if (string1 == nullptr || string2 == nullptr) {
-//		std::cout << NULLPTR_ERROR;
-//		return false;
-//	}
-//
-//	for (size_t i = 0; i < string1Length && i < string2Length; i++) {
-//		if (string1[i] != string2[i]) {
-//			return false;
-//		}
-//
-//		if (string1[i] == TERMINATING_ZERO_CHAR || string2[i] == TERMINATING_ZERO_CHAR) {
-//			break;
-//		}
-//	}
-//
-//	return true;
-//}
-
 int LengthOf(const char* string) {
 	if (string == nullptr) {
 		std::cout << NULLPTR_ERROR;
@@ -182,17 +162,6 @@ void RegisterUser(const char* USERNAME) {
 	writer.close();
 
 	delete[] userTxtPath;
-}
-
-void CopyString(const char* source, int sourceLength, char* destination, int destinationLength) {
-	if (source == nullptr || destination == nullptr) {
-		std::cout << NULLPTR_ERROR;
-		return;
-	}
-
-	for (size_t i = 0; i < sourceLength && i < destinationLength; i++) {
-		destination[i] = source[i];
-	}
 }
 
 void LoginMenu(char* USERNAME) {
