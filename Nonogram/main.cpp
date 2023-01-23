@@ -1,6 +1,6 @@
 /**
 *
-* Solution to course project # 4
+* Solution to course project # 1
 * Introduction to programming course
 * Faculty of Mathematics and Informatics of Sofia University
 * Winter semester 2022/2023
@@ -9,7 +9,7 @@
 * @idnumber 8MI0600242
 * @compiler VC
 *
-* <maim cpp file>
+* <main cpp file>
 *
 */
 
