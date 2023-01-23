@@ -12,11 +12,11 @@ const int TERMINATING_ZERO_LENGTH = 1;
 const char EXIT_CHAR = '3';
 const char ZERO_CHAR = '0';
 const char TERMINATING_ZERO_CHAR = '\0';
-const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
-const char REGISTER_PROMPT[] = "Enter the username you want to register: ";
+const char LOGIN_PROMPT[] = "Enter your username to login: ";
 const char INVALID_INPUT_ERROR[] = "Error: Invalid input.\n";
 const char LOGIN_ERROR[] = "Username is not registered.\n";
-const char FILE_NOT_FOUND_ERROR[] = "Error: File could not be found.\n";
+const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
+const char FILE_NOT_FOUND_ERROR[] = "Error: File not found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
 const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
@@ -30,7 +30,8 @@ const char TEXT_FILE_EXTENTION[] = ".txt";
 
 const char** NewLoginMenu() {
 	const char** LOGIN_MENU = new const char* [LOGIN_MENU_LENGTH] {};
-	LOGIN_MENU[0] = "Enter your username to login: ";
+	//LOGIN_MENU[0] = "Enter your username to login: ";
+	LOGIN_MENU[0] = LOGIN_PROMPT;
 
 	return LOGIN_MENU;
 }
