@@ -106,28 +106,6 @@ char* NewString(const char* string1, const char* string2) {
 	return newString;
 }
 
-//char* GetTxtPath(const char* PARENT_FOLDERS_PATH, const char* FILE_NAME, const char* FILE_EXTENTION) {
-//	if (PARENT_FOLDERS_PATH == nullptr || FILE_NAME == nullptr || FILE_EXTENTION == nullptr) {
-//		std::cout << NULLPTR_ERROR;
-//		return nullptr;
-//	}
-//
-//	char* userTxtPath = new char[LengthOf(PARENT_FOLDERS_PATH) + LengthOf(FILE_NAME) + LengthOf(FILE_EXTENTION) + TERMINATING_ZERO_LENGTH] {};
-//	int currentIndex = 0;
-//
-//	for (size_t i = 0; PARENT_FOLDERS_PATH[i] != TERMINATING_ZERO; i++, currentIndex++) {
-//		userTxtPath[currentIndex] = PARENT_FOLDERS_PATH[i];
-//	}
-//	for (size_t i = 0; FILE_NAME[i] != TERMINATING_ZERO; i++, currentIndex++) {
-//		userTxtPath[currentIndex] = FILE_NAME[i];
-//	}
-//	for (size_t i = 0; FILE_EXTENTION[i] != TERMINATING_ZERO; i++, currentIndex++) {
-//		userTxtPath[currentIndex] = FILE_EXTENTION[i];
-//	}
-//
-//	return userTxtPath;
-//}
-
 char* GetUserTxtPath(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
@@ -136,7 +114,6 @@ char* GetUserTxtPath(const char* username) {
 	char* temp = NewString(USERS_PARENT_FOLDER, username);
 	char* userTxtPath = NewString(temp, TEXT_FILE_EXTENTION);
 	delete[] temp;
-	//char* userTxtPath = GetTxtPath(USERS_PARENT_FOLDER, username, TEXT_FILE_EXTENTION);
 
 	return userTxtPath;
 }
