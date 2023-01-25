@@ -13,7 +13,6 @@
 *
 */
 
-
 #include "Functionality.h"
 
 int main() {
