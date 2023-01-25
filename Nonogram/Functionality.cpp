@@ -359,24 +359,73 @@ inline char IntToChar(int number) {
 	return number + ZERO_CHAR;
 }
 
-char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
-	char difficultyLevelAsCharArray[2]{};
-	difficultyLevelAsCharArray[0] = IntToChar(difficultyLevel);
+int LengthOf(int number) {
+	if (number == 0) {
+		return 1;
+	}
 
-	char* difficultyPath = GetTxtPath(LEVELS_PARENT_FOLDER, difficultyLevelAsCharArray, "/");
+	int length = 0;
+
+	while (number != 0) {
+		length++;
+		number /= 10;
+	}
+
+	return length;
+}
+
+int ReverseOf(int number) {
+	int reversedNumber = 0;
+
+	while (number != 0) {
+		reversedNumber *= 10;
+		reversedNumber += number % 10;
+		number /= 10;
+	}
+
+	return reversedNumber;
+}
+
+char* IntToString(int number) {
+	int numberLength = LengthOf(number);
+	char* numberString = new char[numberLength + TERMINATING_ZERO_LENGTH] {};
+	number = ReverseOf(number);
+
+	for (size_t i = 0; i < numberLength; i++) {
+		numberString[i] = number % 10;
+		number /= 10;
+	}
+
+	return numberString;
+}
+
+char* GetRandomNonogramTxtPath(int difficultyLevel) {
 	int nonogramNumber = 0;
 
 	do {
 		nonogramNumber = rand() % 10;
 	} while (nonogramNumber >= NONOGRAMS_PER_LEVEL);
 
-	char nonogramNumberAsCharArray[2]{};
-	nonogramNumberAsCharArray[0] = IntToChar(nonogramNumber);
+	char* difficultyLevelString = IntToString(difficultyLevel);
+	char* nonogramNumberString = IntToString(nonogramNumber);
+	char* temp1 = NewString(LEVELS_PARENT_FOLDER, difficultyLevelString);
+	char* temp2 = NewString(temp1, "/");
+	char* temp3 = NewString(temp2, nonogramNumberString);
+	char* randomNonogramPath = NewString(temp3, TEXT_FILE_EXTENTION);
 
-	char* nonogramPath = GetTxtPath(difficultyPath, nonogramNumberAsCharArray, TEXT_FILE_EXTENTION);
-	delete[] difficultyPath;
+	delete[] difficultyLevelString;
+	delete[] nonogramNumberString;
+	delete[] temp1;
+	delete[] temp2;
+	delete[] temp3;
 
-	std::ifstream reader(nonogramPath);
+	return randomNonogramPath;
+}
+
+char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
+	char* randomNonogramPath = GetRandomNonogramTxtPath(difficultyLevel);
+
+	std::ifstream reader(randomNonogramPath);
 
 	if (!reader.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
@@ -402,8 +451,8 @@ char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
 
 	char** nonogram = new char*[nonogramHeight];
 	
-	reader.open(nonogramPath);
-	delete[] nonogramPath;
+	reader.open(randomNonogramPath);
+	delete[] randomNonogramPath;
 
 	for (size_t i = 0; !reader.eof(); i++) {
 		nonogram[i] = new char[nonogramLength + TERMINATING_ZERO_LENGTH] {};
