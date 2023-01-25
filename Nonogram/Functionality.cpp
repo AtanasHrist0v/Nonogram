@@ -32,6 +32,10 @@ const char** NewLoginMenu() {
 	return LOGIN_MENU;
 }
 
+void PauseConsole() {
+	system("pause");
+}
+
 void ClearConsole() {
 	system("cls");
 }
@@ -39,6 +43,7 @@ void ClearConsole() {
 void DisplayMenu(const char** menu, int menuLength) {
 	if (menu == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -57,6 +62,7 @@ void DisplayMenu(const char** menu, int menuLength) {
 bool UsernameIsValid(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return false;
 	}
 
@@ -67,13 +73,10 @@ bool UsernameIsValid(const char* username) {
 	return true;
 }
 
-void PauseConsole() {
-	system("pause");
-}
-
 int LengthOf(const char* string) {
 	if (string == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return -1;
 	}
 
@@ -89,6 +92,7 @@ int LengthOf(const char* string) {
 char* NewString(const char* string1, const char* string2) {
 	if (string1 == nullptr || string2 == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return nullptr;
 	}
 
@@ -109,6 +113,7 @@ char* NewString(const char* string1, const char* string2) {
 char* GetUserTxtPath(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return nullptr;
 	}
 	char* temp = NewString(USERS_PARENT_FOLDER, username);
@@ -121,6 +126,7 @@ char* GetUserTxtPath(const char* username) {
 bool UsernameExists(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return false;
 	}
 
@@ -141,6 +147,7 @@ bool UsernameExists(const char* username) {
 void RegisterUser(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -150,6 +157,7 @@ void RegisterUser(const char* username) {
 
 	if (!writer.is_open()) {
 		std::cout << COULDNT_WRITE_TO_FILE_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -200,6 +208,7 @@ void LoginMenu(char* username) {
 bool UserTxtIsEmpty(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return false;
 	}
 
@@ -209,6 +218,7 @@ bool UserTxtIsEmpty(const char* username) {
 
 	if (!reader.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
+		PauseConsole();
 		return false;
 	}
 
@@ -223,7 +233,7 @@ bool UserTxtIsEmpty(const char* username) {
 }
 
 const char** NewMainMenu(const char* username) {
-	const char** MAIN_MENU = new const char* [MAIN_MENU_LENGTH];
+	const char** MAIN_MENU = new const char* [MAIN_MENU_LENGTH] {};
 	MAIN_MENU[0] = username;
 	MAIN_MENU[1] = "\n\n1) Continue\n";
 	MAIN_MENU[2] = "2) Start new Nonogram\n";
@@ -235,6 +245,7 @@ const char** NewMainMenu(const char* username) {
 bool UserInputIsCorrect(const char* userInput, int menuLength) {
 	if (userInput == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return false;
 	}
 
@@ -255,6 +266,7 @@ bool UserInputIsCorrect(const char* userInput, int menuLength) {
 char MainMenu(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return TERMINATING_ZERO;
 	}
 
@@ -276,44 +288,60 @@ inline int CharToInt(char ch) {
 	return ch - ZERO_CHAR;
 }
 
-char** GetNonogramFromUserTxt(const char* username) {
+char** GetNonogramFromUserTxt(const char* username, int& difficultyLevel, int& nonogramHeight) {
 	char* userTxtPath = GetUserTxtPath(username);
-	std::ifstream reader(userTxtPath);
-	delete[] userTxtPath;
+	nonogramHeight = 0;
 
-	if (!reader.is_open()) {
-		std::cout << FILE_NOT_FOUND_ERROR;
+	if (userTxtPath == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return nullptr;
 	}
 
-	char currentLine[INPUT_MAX_LENGTH]{};
-	char** nonogram = nullptr;
+	std::ifstream reader(userTxtPath);
 
-	while (!reader.eof()) {
-		reader.getline(currentLine, INPUT_MAX_LENGTH);
-
-		if (currentLine[0] == TERMINATING_ZERO) {
-			std::cout << "Bruh can't continue cuz you're new.";
-			return nullptr;
-		}
-
-		if (currentLine[0] != ' ') {
-			continue;
-		}
-
-		//bruh idk
+	if (!reader.is_open()) {
+		std::cout << FILE_NOT_FOUND_ERROR;
+		PauseConsole();
+		return nullptr;
 	}
 
-	//bruh idk
+	int nonogramLength = 0;
+	char buffer[INPUT_MAX_LENGTH]{};
+	char** nonogram = nullptr;
+
+	reader.getline(buffer, INPUT_MAX_LENGTH);
+	difficultyLevel = CharToInt(buffer[0]);
+
+	reader.getline(buffer, INPUT_MAX_LENGTH);
+	nonogramLength = LengthOf(buffer);
+	nonogramHeight++;
+
+	while (!reader.eof()) {
+		reader.getline(buffer, INPUT_MAX_LENGTH);
+		nonogramHeight++;
+	}
 
 	reader.close();
+	nonogram = new char* [nonogramHeight] {};
+	reader.open(userTxtPath);
+	reader.getline(buffer, INPUT_MAX_LENGTH);
+
+	for (size_t i = 0; i < nonogramHeight; i++) {
+		nonogram[i] = new char[nonogramLength + TERMINATING_ZERO_LENGTH] {};
+		reader.getline(nonogram[i], nonogramLength + TERMINATING_ZERO_LENGTH);
+	}
+
+	reader.close();
+	delete[] userTxtPath;
 
 	return nonogram;
 }
 
-void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& nonogram) {
+void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -328,8 +356,7 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& no
 		return;
 	}
 	
-	//TODO
-	//Load nonogram from userTxt
+	nonogram = GetNonogramFromUserTxt(username, difficultyLevel, nonogramHeight);
 }
 
 inline char IntToChar(int number) {
@@ -404,6 +431,7 @@ char** GetNonogramFromTxt(const char* nonogramPath, int& nonogramHeight) {
 
 	if (nonogramPath == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return nullptr;
 	}
 
@@ -429,9 +457,8 @@ char** GetNonogramFromTxt(const char* nonogramPath, int& nonogramHeight) {
 	}
 
 	reader.close();
-	nonogram = new char* [nonogramHeight];
+	nonogram = new char* [nonogramHeight] {};
 	reader.open(nonogramPath);
-	delete[] nonogramPath;
 
 	for (size_t i = 0; i < nonogramHeight; i++) {
 		nonogram[i] = new char[nonogramLength + TERMINATING_ZERO_LENGTH] {};
@@ -453,6 +480,7 @@ char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
 void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -468,6 +496,7 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 
 	if (!reader.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
+		PauseConsole();
 		return;
 	}
 
@@ -484,17 +513,6 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	reader.close();
 
 	nonogram = RandomNonogram(difficultyLevel, nonogramHeight);
-
-	std::ofstream writer(userTxtPath);
-	delete[] userTxtPath;
-
-	writer << difficultyLevel << std::endl;
-
-	for (size_t i = 0; i < nonogramHeight; i++) {
-		writer << nonogram[i] << std::endl;
-	}
-
-	writer.close();
 }
 
 void DisplayNonogram(char** nonogram, int nonogramHeight) {
@@ -521,7 +539,8 @@ void UpdateNonogram(char** nonogram, int nonogramHeight,const char* userInput) {
 
 void PlayNonogram(char** nonogram, int nonogramHeight, bool** nonogramSolution, int difficultyLevel) {
 	if (nonogram == nullptr) {
-		std::cout << NULLPTR_ERROR;
+		//std::cout << NULLPTR_ERROR;
+		//PauseConsole();
 		return;
 	}
 
@@ -544,7 +563,13 @@ void PlayNonogram(char** nonogram, int nonogramHeight, bool** nonogramSolution, 
 }
 
 void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, char** nonogram, int nonogramHeight) {
-	if (username == nullptr || nonogram == nullptr) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		PauseConsole();
+		return;
+	}
+
+	if (nonogram == nullptr) {
 		//No NULLPTR_ERROR because player can log in and immediately exit game.
 		return;
 	}
@@ -555,13 +580,15 @@ void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, char** n
 
 	if (!writer.is_open()) {
 		std::cout << COULDNT_WRITE_TO_FILE_ERROR;
+		PauseConsole();
 		return;
 	}
 
 	writer << difficultyLevel << std::endl;
-	for (size_t i = 0; i < nonogramHeight; i++) {
+	for (size_t i = 0; i < nonogramHeight - 1; i++) {// nonogramHeight - 1 make into variable
 		writer << nonogram[i] << std::endl;
 	}
+	writer << nonogram[nonogramHeight - 1];
 
 	writer.close();
 }
@@ -582,10 +609,11 @@ void StartGame(const char* username) {
 
 		switch (mainMenuChoice) {
 			case '1':
-				ContinueLastNonogram(username, difficultyLevel, nonogram);
+				ContinueLastNonogram(username, difficultyLevel, nonogram, nonogramHeight);
 				break;
 			case '2':
 				StartNewNonogram(username, difficultyLevel, nonogram, nonogramHeight);
+				SaveNonogramToPlayerTxt(username, difficultyLevel, nonogram, nonogramHeight);
 				break;
 			default:
 				break;
