@@ -20,7 +20,7 @@ const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";
 const char FILE_NOT_FOUND_ERROR[] = "Error: File not found.\n";
 const char COULDNT_WRITE_TO_FILE_ERROR[] = "Error: Couldn't write to file.\n";
 const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
-const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
+const char NO_SAVED_GAME_ERROR[] = "Error: No saved game.\n";
 const char USERS_PARENT_FOLDER[] = "users/";
 const char LEVELS_PARENT_FOLDER[] = "levels/";
 const char TEXT_FILE_EXTENTION[] = ".txt";
@@ -318,15 +318,19 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& no
 		return;
 	}
 
-
 	if (nonogram != nullptr) {
 		//Returning here so that the player can't cheese his way into fixing his mistakes.
 		return;
 	}
 
+	if (UserTxtIsEmpty(username)) {
+		std::cout << NO_SAVED_GAME_ERROR;
+		PauseConsole();
+		return;
+	}
 	
 	//TODO
-	//Start game on the nonogram
+	//Load nonogram from userTxt
 }
 
 inline char IntToChar(int number) {
@@ -506,7 +510,6 @@ void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, char** n
 }
 
 void StartGame(const char* username) {
-	bool userTxtIsEmpty = UserTxtIsEmpty(username);
 	char mainMenuChoice = TERMINATING_ZERO;
 	int difficultyLevel = 0;
 	char** nonogram = nullptr;
@@ -522,12 +525,6 @@ void StartGame(const char* username) {
 
 		switch (mainMenuChoice) {
 			case '1':
-				if (userTxtIsEmpty) {
-					std::cout << "Can't coutinue cuz no saved game bro.\n";
-					PauseConsole();
-					continue;
-				}// maybe put in function below?
-
 				ContinueLastNonogram(username, difficultyLevel, nonogram);
 				break;
 			case '2':
