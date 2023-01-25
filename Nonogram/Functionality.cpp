@@ -12,7 +12,7 @@ const int TERMINATING_ZERO_LENGTH = 1;
 const char EXIT_CHAR = '3';
 const char EXIT_STRING[] = "exit";
 const char ZERO_CHAR = '0';
-const char TERMINATING_ZERO_CHAR = '\0';
+const char TERMINATING_ZERO = '\0';
 const char LOGIN_PROMPT[] = "Enter your username to login: ";
 const char INVALID_INPUT_ERROR[] = "Error: Invalid input.\n";
 const char LOGIN_ERROR[] = "Username is not registered.\n";
@@ -23,11 +23,6 @@ const char NULLPTR_ERROR[] = "Error: nullptr has been passed as an argument.\n";
 const char DIFFICULTY_LEVEL_ERROR[] = "Error: Wrong DIFFICULTY_LEVEL.\0";
 const char USERS_PARENT_FOLDER[] = "users/";
 const char LEVELS_PARENT_FOLDER[] = "levels/";
-const char LEVEL_1_PARENT_FOLDER[] = "levels/1/";
-const char LEVEL_2_PARENT_FOLDER[] = "levels/2/";
-const char LEVEL_3_PARENT_FOLDER[] = "levels/3/";
-const char LEVEL_4_PARENT_FOLDER[] = "levels/4/";
-const char LEVEL_5_PARENT_FOLDER[] = "levels/5/";
 const char TEXT_FILE_EXTENTION[] = ".txt";
 
 const char** NewLoginMenu() {
@@ -65,7 +60,7 @@ bool UsernameIsValid(const char* username) {
 		return false;
 	}
 
-	if (username[0] == TERMINATING_ZERO_CHAR) {
+	if (username[0] == TERMINATING_ZERO) {
 		return false;
 	}
 
@@ -84,7 +79,7 @@ int LengthOf(const char* string) {
 
 	int length = 0;
 
-	while (string[length] != TERMINATING_ZERO_CHAR) {
+	while (string[length] != TERMINATING_ZERO) {
 		length++;
 	}
 
@@ -100,13 +95,13 @@ char* GetTxtPath(const char* PARENT_FOLDERS_PATH, const char* FILE_NAME, const c
 	char* userTxtPath = new char[LengthOf(PARENT_FOLDERS_PATH) + LengthOf(FILE_NAME) + LengthOf(FILE_EXTENTION) + TERMINATING_ZERO_LENGTH] {};
 	int currentIndex = 0;
 
-	for (size_t i = 0; PARENT_FOLDERS_PATH[i] != TERMINATING_ZERO_CHAR; i++, currentIndex++) {
+	for (size_t i = 0; PARENT_FOLDERS_PATH[i] != TERMINATING_ZERO; i++, currentIndex++) {
 		userTxtPath[currentIndex] = PARENT_FOLDERS_PATH[i];
 	}
-	for (size_t i = 0; FILE_NAME[i] != TERMINATING_ZERO_CHAR; i++, currentIndex++) {
+	for (size_t i = 0; FILE_NAME[i] != TERMINATING_ZERO; i++, currentIndex++) {
 		userTxtPath[currentIndex] = FILE_NAME[i];
 	}
-	for (size_t i = 0; FILE_EXTENTION[i] != TERMINATING_ZERO_CHAR; i++, currentIndex++) {
+	for (size_t i = 0; FILE_EXTENTION[i] != TERMINATING_ZERO; i++, currentIndex++) {
 		userTxtPath[currentIndex] = FILE_EXTENTION[i];
 	}
 
@@ -124,7 +119,7 @@ char* GetUserTxtPath(const char* username) {
 	return userTxtPath;
 }
 
-bool UsernameExists(const char* username, bool& userTxtIsEmpty) {
+bool UsernameExists(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
 		return false;
@@ -137,14 +132,6 @@ bool UsernameExists(const char* username, bool& userTxtIsEmpty) {
 	delete[] userTxtPath;
 
 	if (reader.is_open()) {
-		char buffer[INPUT_MAX_LENGTH]{};
-
-		reader.getline(buffer, INPUT_MAX_LENGTH);
-
-		if (buffer[0] != TERMINATING_ZERO_CHAR) {
-			userTxtIsEmpty = false;
-		}
-
 		reader.close();
 		return true;
 	}
@@ -176,7 +163,7 @@ void DeallocateMenuMemory(const char** menu) {
 	delete[] menu;
 }
 
-void LoginMenu(char* username, bool& userTxtIsEmpty) {
+void LoginMenu(char* username) {
 	const char** LOGIN_MENU = NewLoginMenu();
 	char userInput[INPUT_MAX_LENGTH]{};
 	bool usernameExists = false;
@@ -191,7 +178,7 @@ void LoginMenu(char* username, bool& userTxtIsEmpty) {
 			continue;
 		}
 
-		usernameExists = UsernameExists(username, userTxtIsEmpty);
+		usernameExists = UsernameExists(username);
 
 		if (usernameExists) {
 			break;
@@ -201,15 +188,39 @@ void LoginMenu(char* username, bool& userTxtIsEmpty) {
 		std::cout << NEW_USER_PROMPT;
 		std::cin.getline(userInput, 100);
 
-		if (userInput[0] == 'y' && userInput[1] == TERMINATING_ZERO_CHAR) {
+		if (userInput[0] == 'y' && userInput[1] == TERMINATING_ZERO) {
 			RegisterUser(username);
 			usernameExists = true;
-			userTxtIsEmpty = true;
 		}
 
 	} while (!usernameExists);
 
 	DeallocateMenuMemory(LOGIN_MENU);
+}
+
+bool UserTxtIsEmpty(const char* username) {
+	if (username == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return false;
+	}
+
+	char* userTxtPath = GetUserTxtPath(username);
+	std::ifstream reader(userTxtPath);
+	delete[] userTxtPath;
+
+	if (!reader.is_open()) {
+		std::cout << FILE_NOT_FOUND_ERROR;
+		return false;
+	}
+
+	char buffer = TERMINATING_ZERO;
+	reader >> buffer;
+
+	if (buffer == TERMINATING_ZERO) {
+		return true;
+	}
+
+	return false;
 }
 
 const char** NewMainMenu(const char* username) {
@@ -228,7 +239,7 @@ bool UserInputIsCorrect(const char* userInput, int menuLength) {
 		return false;
 	}
 
-	if (userInput[1] != TERMINATING_ZERO_CHAR) {
+	if (userInput[1] != TERMINATING_ZERO) {
 		return false;
 	}
 
@@ -245,7 +256,7 @@ bool UserInputIsCorrect(const char* userInput, int menuLength) {
 char MainMenu(const char* username) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
-		return TERMINATING_ZERO_CHAR;
+		return TERMINATING_ZERO;
 	}
 
 	const char** MAIN_MENU = NewMainMenu(username);
@@ -282,7 +293,7 @@ char** GetNonogramFromUserTxt(const char* username) {
 	while (!reader.eof()) {
 		reader.getline(currentLine, INPUT_MAX_LENGTH);
 
-		if (currentLine[0] == TERMINATING_ZERO_CHAR) {
+		if (currentLine[0] == TERMINATING_ZERO) {
 			std::cout << "Bruh can't continue cuz you're new.";
 			return nullptr;
 		}
@@ -403,7 +414,7 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 
 	reader.getline(currentLine, INPUT_MAX_LENGTH);
 
-	if (currentLine[0] != TERMINATING_ZERO_CHAR) {
+	if (currentLine[0] != TERMINATING_ZERO) {
 		difficultyLevel = CharToInt(currentLine[0]);
 	} else {
 		difficultyLevel = FIRST_LEVEL;
@@ -433,7 +444,7 @@ void DisplayNonogram(char** nonogram, int nonogramHeight) {
 }
 
 bool UserInputIsExit(const char* userInput) {
-	for (size_t i = 0; EXIT_STRING[i] != TERMINATING_ZERO_CHAR; i++) {
+	for (size_t i = 0; EXIT_STRING[i] != TERMINATING_ZERO; i++) {
 		if (userInput[i] != EXIT_STRING[i]) {
 			return false;
 		}
@@ -494,8 +505,9 @@ void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, char** n
 	writer.close();
 }
 
-void StartGame(const char* username, bool userTxtIsEmpty) {
-	char mainMenuChoice = TERMINATING_ZERO_CHAR;
+void StartGame(const char* username) {
+	bool userTxtIsEmpty = UserTxtIsEmpty(username);
+	char mainMenuChoice = TERMINATING_ZERO;
 	int difficultyLevel = 0;
 	char** nonogram = nullptr;
 	int nonogramHeight = 0;
@@ -547,10 +559,9 @@ void StartProgram() {
 	srand(time(0));
 
 	char* username = new char[INPUT_MAX_LENGTH] {};
-	bool userTxtIsEmpty = true;//should totally remove this and add a separate function to check if userTxt is empty instead of passing 100000 arguments.
 
-	LoginMenu(username, userTxtIsEmpty);
-	StartGame(username, userTxtIsEmpty);
+	LoginMenu(username);
+	StartGame(username);
 
 	delete[] username;
 }
