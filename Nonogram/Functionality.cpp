@@ -369,7 +369,7 @@ char* IntToString(int number) {
 	number = ReverseOf(number);
 
 	for (size_t i = 0; i < numberLength; i++) {
-		numberString[i] = number % 10;
+		numberString[i] = IntToChar(number % 10);
 		number /= 10;
 	}
 
@@ -399,10 +399,15 @@ char* GetRandomNonogramTxtPath(int difficultyLevel) {
 	return randomNonogramPath;
 }
 
-char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
-	char* randomNonogramPath = GetRandomNonogramTxtPath(difficultyLevel);
+char** GetNonogramFromTxt(const char* nonogramPath, int& nonogramHeight) {
+	nonogramHeight = 0;
 
-	std::ifstream reader(randomNonogramPath);
+	if (nonogramPath == nullptr) {
+		std::cout << NULLPTR_ERROR;
+		return nullptr;
+	}
+
+	std::ifstream reader(nonogramPath);
 
 	if (!reader.is_open()) {
 		std::cout << FILE_NOT_FOUND_ERROR;
@@ -411,11 +416,10 @@ char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
 	}
 
 	int nonogramLength = 0;
-
 	char buffer[INPUT_MAX_LENGTH]{};
+	char** nonogram = nullptr;
 
 	reader.getline(buffer, INPUT_MAX_LENGTH);
-
 	nonogramLength = LengthOf(buffer);
 	nonogramHeight++;
 
@@ -425,20 +429,25 @@ char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
 	}
 
 	reader.close();
+	nonogram = new char* [nonogramHeight];
+	reader.open(nonogramPath);
+	delete[] nonogramPath;
 
-	char** nonogram = new char*[nonogramHeight];
-	
-	reader.open(randomNonogramPath);
-	delete[] randomNonogramPath;
-
-	for (size_t i = 0; !reader.eof(); i++) {
+	for (size_t i = 0; i < nonogramHeight; i++) {
 		nonogram[i] = new char[nonogramLength + TERMINATING_ZERO_LENGTH] {};
 		reader.getline(nonogram[i], nonogramLength + TERMINATING_ZERO_LENGTH);
 	}
 
 	reader.close();
-
 	return nonogram;
+}
+
+char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
+	char* randomNonogramPath = GetRandomNonogramTxtPath(difficultyLevel);
+	char** randomNonogram = GetNonogramFromTxt(randomNonogramPath, nonogramHeight);
+
+	delete[] randomNonogramPath;
+	return randomNonogram;
 }
 
 void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight) {
