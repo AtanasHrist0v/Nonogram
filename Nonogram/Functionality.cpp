@@ -359,8 +359,31 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& no
 	nonogram = GetNonogramFromUserTxt(username, difficultyLevel, nonogramHeight);
 }
 
-inline char IntToChar(int number) {
-	return number + ZERO_CHAR;
+//Needs total rework
+int DifficultyMenu(int difficultyLevel) {
+	int userChoice = 0;
+	char userInput[INPUT_MAX_LENGTH]{};
+
+	do {
+		//will move to a separate function
+		{
+			ClearConsole();
+			std::cout << "Choose your level of difficulty from the given below:" << std::endl;
+			for (size_t i = 1; i <= difficultyLevel; i++) {
+				std::cout << i << " ";
+			}
+			std::cout << std::endl << "Your choice: ";
+		}
+
+		std::cin.getline(userInput, 100);
+
+		if (userInput[1] == TERMINATING_ZERO) {
+			userChoice = CharToInt(userInput[0]);
+		}
+
+	} while (userChoice <= 0 || userChoice > difficultyLevel);
+
+	return userChoice;
 }
 
 int LengthOf(int number) {
@@ -388,6 +411,10 @@ int ReverseOf(int number) {
 	}
 
 	return reversedNumber;
+}
+
+inline char IntToChar(int number) {
+	return number + ZERO_CHAR;
 }
 
 char* IntToString(int number) {
@@ -512,7 +539,9 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 
 	reader.close();
 
-	nonogram = RandomNonogram(difficultyLevel, nonogramHeight);
+	int difficultyChoice = DifficultyMenu(difficultyLevel);
+
+	nonogram = RandomNonogram(difficultyChoice, nonogramHeight);
 }
 
 void DisplayNonogram(char** nonogram, int nonogramHeight) {
