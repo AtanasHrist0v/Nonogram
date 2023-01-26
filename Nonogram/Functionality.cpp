@@ -288,7 +288,7 @@ inline int CharToInt(char ch) {
 	return ch - ZERO_CHAR;
 }
 
-char** GetNonogramFromUserTxt(const char* username, int& difficultyLevel, int& nonogramHeight) {
+char** GetNonogramFromUserTxt(const char* username, int& difficultyLevel, int& nonogramHeight, bool**& nonogramSolution) {
 	char* userTxtPath = GetUserTxtPath(username);
 	nonogramHeight = 0;
 
@@ -338,7 +338,7 @@ char** GetNonogramFromUserTxt(const char* username, int& difficultyLevel, int& n
 	return nonogram;
 }
 
-void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight) {
+void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight, bool**& nonogramSolution) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
 		PauseConsole();
@@ -356,7 +356,8 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, char**& no
 		return;
 	}
 	
-	nonogram = GetNonogramFromUserTxt(username, difficultyLevel, nonogramHeight);
+	//nonogramSolution = GetNonogramSolutionFromUserTxt(username, nonogramHeight);
+	nonogram = GetNonogramFromUserTxt(username, difficultyLevel, nonogramHeight, nonogramSolution);
 }
 
 //Needs total rework
@@ -504,7 +505,7 @@ char** RandomNonogram(int difficultyLevel, int& nonogramHeight) {
 	return randomNonogram;
 }
 
-void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight) {
+void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogram, int& nonogramHeight, bool**& nonogramSolution) {
 	if (username == nullptr) {
 		std::cout << NULLPTR_ERROR;
 		PauseConsole();
@@ -638,10 +639,10 @@ void StartGame(const char* username) {
 
 		switch (mainMenuChoice) {
 			case '1':
-				ContinueLastNonogram(username, difficultyLevel, nonogram, nonogramHeight);
+				ContinueLastNonogram(username, difficultyLevel, nonogram, nonogramHeight, nonogramSolution);
 				break;
 			case '2':
-				StartNewNonogram(username, difficultyLevel, nonogram, nonogramHeight);
+				StartNewNonogram(username, difficultyLevel, nonogram, nonogramHeight, nonogramSolution);
 				SaveNonogramToPlayerTxt(username, difficultyLevel, nonogram, nonogramHeight);
 				break;
 			default:
