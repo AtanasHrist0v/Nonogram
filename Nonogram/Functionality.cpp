@@ -116,6 +116,7 @@ char* GetUserTxtPath(const char* username) {
 		PauseConsole();
 		return nullptr;
 	}
+
 	char* temp = NewString(USERS_PARENT_FOLDER, username);
 	char* userTxtPath = NewString(temp, TEXT_FILE_EXTENTION);
 	delete[] temp;
@@ -131,9 +132,7 @@ bool UsernameExists(const char* username) {
 	}
 
 	char* userTxtPath = GetUserTxtPath(username);
-
 	std::ifstream reader(userTxtPath);
-
 	delete[] userTxtPath;
 
 	if (reader.is_open()) {
@@ -152,7 +151,6 @@ void RegisterUser(const char* username) {
 	}
 
 	char* userTxtPath = GetUserTxtPath(username);
-
 	std::ofstream writer(userTxtPath);
 
 	if (!writer.is_open()) {
@@ -162,7 +160,6 @@ void RegisterUser(const char* username) {
 	}
 
 	writer.close();
-
 	delete[] userTxtPath;
 }
 
@@ -519,7 +516,6 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	delete[] nonogram;
 
 	char* userTxtPath = GetUserTxtPath(username);
-
 	std::ifstream reader(userTxtPath);
 
 	if (!reader.is_open()) {
@@ -529,7 +525,6 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	}
 
 	char currentLine[INPUT_MAX_LENGTH]{};
-
 	reader.getline(currentLine, INPUT_MAX_LENGTH);
 
 	if (currentLine[0] != TERMINATING_ZERO) {
@@ -539,9 +534,7 @@ void StartNewNonogram(const char* username, int& difficultyLevel, char**& nonogr
 	}
 
 	reader.close();
-
 	int difficultyChoice = DifficultyMenu(difficultyLevel);
-
 	nonogram = RandomNonogram(difficultyChoice, nonogramHeight);
 }
 
