@@ -602,7 +602,7 @@ char** GetGraphicalNonogram(int** nonogram, int nonogramSize, int& graphicalNono
 	char** graphicalNonogram = new char* [ROWS] {};
 
 	graphicalNonogram[0] = new char[ROW_LENGTH] {};
-	graphicalNonogram[0][0] = '|'; 
+	graphicalNonogram[0][0] = '|';
 	graphicalNonogram[0][ROW_LENGTH - 2] = '|';
 
 	for (size_t i = 1; i < ROW_LENGTH - 2; i++) {
