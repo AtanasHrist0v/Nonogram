@@ -318,8 +318,46 @@ void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, int allo
 	writer.close();
 }
 
-char** GetGraphicalNonogram(int** nonogram, int nonogramSize, int& graphicalNonogramSize) {
-	const int ROWS = nonogramSize + 2,
+char** GetGraphicalNonogram(bool** nonogramSolution, int nonogramSize, int& graphicalNonogramSize) {
+	int numbersArrayRows = nonogramSize / 2,
+		numbersArrayColumns = nonogramSize;
+	if (nonogramSize & 1) numbersArrayRows++;
+
+	int** topNumbersArray = new int* [numbersArrayRows] {};
+	int** sideNumbersArray = new int* [numbersArrayColumns] {};
+
+	for (size_t i = 0; i < numbersArrayRows; i++) {
+		topNumbersArray[i] = new int[numbersArrayColumns] {};
+	}
+	for (size_t i = 0; i < numbersArrayColumns; i++) {
+		sideNumbersArray[i] = new int[numbersArrayRows] {};
+	}
+
+	int index = 0;
+	for (size_t i = 0; i < nonogramSize; i++) {
+		index = numbersArrayRows - 1;
+
+		for (size_t j = numbersArrayRows - 1; j < nonogramSize; j++) {
+			if (nonogramSolution[j][i]) {
+				topNumbersArray[index][i]++;
+				continue;
+			}
+
+			if (topNumbersArray[index][i] > 0) {
+				index--;
+			}
+		}
+	}
+
+	std::cout << std::endl;
+	for (size_t i = 0; i < numbersArrayRows; i++) {
+		for (size_t j = 0; j < numbersArrayColumns; j++) {
+			std::cout << topNumbersArray[i][j] << ' ';
+		}
+		std::cout << std::endl;
+	}//TODO doesn't work
+
+	const int ROWS = numbersArrayRows + nonogramSize + 2,
 		ROW_LENGTH = (nonogramSize + 1) * 2 + TERMINATING_ZERO_LENGTH;
 
 	graphicalNonogramSize = ROWS;
@@ -340,7 +378,7 @@ char** GetGraphicalNonogram(int** nonogram, int nonogramSize, int& graphicalNono
 		graphicalNonogram[i + 1][0] = '|';
 		graphicalNonogram[i + 1][ROW_LENGTH - 2] = '|';
 		for (size_t j = 0; j < nonogramSize; j++) {
-			switch (nonogram[i][j]) {
+			switch (nonogramSolution[i][j]) {
 				case 0:
 					graphicalNonogram[i + 1][2 * j + 1] = '>';
 					graphicalNonogram[i + 1][2 * j + 2] = '<';
@@ -445,7 +483,8 @@ void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSoluti
 			playerMistakes++;
 			std::cout << "You've made a mistake.\n";
 			PauseConsole();
-			break;
+			//break;
+			return;
 		default:
 			std::cout << "Wrong input.\n";
 			PauseConsole();
@@ -527,8 +566,8 @@ void UpdateGraphicalNonogram(char** graphicalNonogram, int** nonogram, int nonog
 
 void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, bool** nonogramSolution, int& playerMistakes, int** nonogram) {
 	if (nonogram == nullptr) {
-		std::cout << NULLPTR_ERROR;
-		PauseConsole();
+		//std::cout << NULLPTR_ERROR;
+		//PauseConsole();
 		return;
 	}
 
@@ -548,7 +587,7 @@ void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, b
 	}
 
 	int graphicalNonogramSize = 0;
-	char** graphicalNonogram = GetGraphicalNonogram(nonogram, nonogramSize, graphicalNonogramSize);
+	char** graphicalNonogram = GetGraphicalNonogram(nonogramSolution, nonogramSize, graphicalNonogramSize);
 
 	char userInput[INPUT_MAX_LENGTH]{};
 
