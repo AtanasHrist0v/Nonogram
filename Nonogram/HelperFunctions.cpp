@@ -99,7 +99,7 @@ char* GetUserTxtPath(const char* username) {
 	return userTxtPath;
 }
 
-inline int CharToInt(char ch) {
+int CharToInt(char ch) {
 	return ch - ZERO_CHAR;
 }
 
