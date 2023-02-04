@@ -13,7 +13,7 @@
 *
 */
 
-#include "Functionality.h"
+#include "GameEngine.h"
 
 int main() {
 	StartProgram();

@@ -127,12 +127,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Functionality.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="HelperFunctions.cpp" />
+    <ClCompile Include="LoginMenu.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="Functionality.h" />
+    <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="HelperFunctions.h" />
+    <ClInclude Include="LoginMenu.h" />
+    <ClInclude Include="MainMenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
