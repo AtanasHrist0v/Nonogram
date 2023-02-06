@@ -741,7 +741,8 @@ void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, b
 
 		DisplayNonogram(graphicalNonogram, graphicalNonogramHeight);
 		if (difficultyLevel == FIRST_LEVEL) {
-			std::cout << "Enter input in this format: <row> <column> <state(e/f)>\n";
+			std::cout << "Enter input in this format: <row> <column> <state(e/f)> (Example: 0 2 e)\n";
+			std::cout << "Or enter \"exit\" to go back to main menu.\n";
 		}
 		std::cin.getline(userInput, INPUT_MAX_LENGTH);
 
