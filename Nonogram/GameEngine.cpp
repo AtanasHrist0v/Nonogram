@@ -574,10 +574,17 @@ int ExtractNumberFromString(const char* string, int startIndex, int endIndex) {
 }
 
 void ExtractDataFromUserInput(const char* userInput, int& x, int& y, char& state) {
-	int firstSpaceIndex = 0,
+	int firstNonSpaceIndex = 0,
+		firstSpaceIndex = 0,
 		secondSpaceIndex = 0;
 
 	for (size_t i = 0; userInput[i] != TERMINATING_ZERO; i++) {
+		if (userInput[i] != ' ') {
+			firstNonSpaceIndex = i;
+			break;
+		}
+	}
+	for (size_t i = firstNonSpaceIndex + 1; userInput[i] != TERMINATING_ZERO; i++) {
 		if (userInput[i] == ' ') {
 			firstSpaceIndex = i;
 			break;
@@ -590,7 +597,7 @@ void ExtractDataFromUserInput(const char* userInput, int& x, int& y, char& state
 		}
 	}
 
-	x = ExtractNumberFromString(userInput, 0, firstSpaceIndex);
+	x = ExtractNumberFromString(userInput, firstNonSpaceIndex, firstSpaceIndex);
 	y = ExtractNumberFromString(userInput, firstSpaceIndex + 1, secondSpaceIndex);
 	state = userInput[secondSpaceIndex + 1];
 }
