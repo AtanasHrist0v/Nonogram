@@ -318,91 +318,229 @@ void SaveNonogramToPlayerTxt(const char* username, int difficultyLevel, int allo
 	writer.close();
 }
 
-char** GetGraphicalNonogram(bool** nonogramSolution, int nonogramSize, int& graphicalNonogramSize) {
-	int numbersArrayRows = nonogramSize / 2,
-		numbersArrayColumns = nonogramSize;
-	if (nonogramSize & 1) numbersArrayRows++;
-
-	int** topNumbersArray = new int* [numbersArrayRows] {};
-	int** sideNumbersArray = new int* [numbersArrayColumns] {};
-
-	for (size_t i = 0; i < numbersArrayRows; i++) {
-		topNumbersArray[i] = new int[numbersArrayColumns] {};
-	}
-	for (size_t i = 0; i < numbersArrayColumns; i++) {
-		sideNumbersArray[i] = new int[numbersArrayRows] {};
+int** GetTopNumbersArray(int rows, int columns, bool** nonogramSolution, int nonogramSize) {
+	int** topNumbersArray = new int* [rows] {};
+	for (size_t i = 0; i < rows; i++) {
+		topNumbersArray[i] = new int[columns] {};
 	}
 
 	int index = 0;
-	for (size_t i = 0; i < nonogramSize; i++) {
-		index = numbersArrayRows - 1;
+	for (size_t col = 0; col < nonogramSize; col++) {
+		index = rows - 1;
 
-		for (size_t j = numbersArrayRows - 1; j < nonogramSize; j++) {
-			if (nonogramSolution[j][i]) {
-				topNumbersArray[index][i]++;
+		for (int row = nonogramSize - 1; row >= 0; row--) {
+			if (nonogramSolution[row][col]) {
+				topNumbersArray[index][col]++;
 				continue;
 			}
 
-			if (topNumbersArray[index][i] > 0) {
+			if (topNumbersArray[index][col] > 0) {
 				index--;
 			}
 		}
 	}
 
-	std::cout << std::endl;
-	for (size_t i = 0; i < numbersArrayRows; i++) {
-		for (size_t j = 0; j < numbersArrayColumns; j++) {
-			std::cout << topNumbersArray[i][j] << ' ';
-		}
-		std::cout << std::endl;
-	}//TODO doesn't work
+	return topNumbersArray;
+}
 
-	const int ROWS = numbersArrayRows + nonogramSize + 2,
-		ROW_LENGTH = (nonogramSize + 1) * 2 + TERMINATING_ZERO_LENGTH;
-
-	graphicalNonogramSize = ROWS;
-
-	char** graphicalNonogram = new char* [ROWS] {};
-
-	graphicalNonogram[0] = new char[ROW_LENGTH] {};
-	graphicalNonogram[0][0] = '|';
-	graphicalNonogram[0][ROW_LENGTH - 2] = '|';
-
-	for (size_t i = 1; i < ROW_LENGTH - 2; i++) {
-		graphicalNonogram[0][i] = '=';
+int** GetSideNumbersArray(int rows, int columns, bool** nonogramSolution, int nonogramSize) {
+	int** sideNumbersArray = new int* [rows] {};
+	for (size_t i = 0; i < rows; i++) {
+		sideNumbersArray[i] = new int[columns] {};
 	}
 
-	for (size_t i = 0; i < nonogramSize; i++) {
-		graphicalNonogram[i + 1] = new char[ROW_LENGTH] {};
+	int index = 0;
+	for (size_t row = 0; row < nonogramSize; row++) {
+		index = columns - 1;
 
-		graphicalNonogram[i + 1][0] = '|';
-		graphicalNonogram[i + 1][ROW_LENGTH - 2] = '|';
-		for (size_t j = 0; j < nonogramSize; j++) {
-			switch (nonogramSolution[i][j]) {
-				case 0:
-					graphicalNonogram[i + 1][2 * j + 1] = '>';
-					graphicalNonogram[i + 1][2 * j + 2] = '<';
-					break;
-				case 1:
-					graphicalNonogram[i + 1][2 * j + 1] = '#';
-					graphicalNonogram[i + 1][2 * j + 2] = '#';
-					break;
-				case 2:
-					graphicalNonogram[i + 1][2 * j + 1] = ' ';
-					graphicalNonogram[i + 1][2 * j + 2] = ' ';
-					break;
-				default:
-					break;
+		for (int col = nonogramSize - 1; col >= 0; col--) {
+			if (nonogramSolution[row][col]) {
+				sideNumbersArray[row][index]++;
+				continue;
+			}
+
+			if (sideNumbersArray[row][index] > 0) {
+				index--;
 			}
 		}
 	}
 
-	graphicalNonogram[ROWS - 1] = new char[ROW_LENGTH] {};
-	graphicalNonogram[ROWS - 1][0] = graphicalNonogram[ROWS - 1][ROW_LENGTH - 2] = '|';
+	return sideNumbersArray;
+}
 
-	for (size_t i = 1; i < ROW_LENGTH - 2; i++) {
-		graphicalNonogram[ROWS - 1][i] = '=';
+char** GetTopNumbersArrayGraphical(int** topNumbersArray, int rows, int columns, int& width, int& height) {
+	width = columns * 2 + TERMINATING_ZERO_LENGTH;
+	height = rows;
+
+	bool rowIsEmpty = false;
+	for (size_t i = 0; i < rows; i++) {
+		rowIsEmpty = true;
+
+		for (size_t j = 0; j < columns; j++) {
+			if (topNumbersArray[i][j] > 0) {
+				rowIsEmpty = false;
+				break;
+			}
+		}
+
+		if (rowIsEmpty) {
+			height--;
+		} else {
+			break;
+		}
 	}
+
+	int lastEmptySpace = width - 1;
+	char** topNumbersArrayGraphical = new char* [height] {};
+
+	for (size_t i = 0; i < height; i++) {
+		topNumbersArrayGraphical[i] = new char[width] {};
+		for (size_t j = 0; j < lastEmptySpace; j++) {
+			topNumbersArrayGraphical[i][j] = ' ';
+		}
+	}
+
+	int currentNumber = 0,
+		rowsAndHeightDifference = rows - height;
+	for (int i = rows - 1; i >= rowsAndHeightDifference; i--) {
+		for (size_t j = 0; j < columns; j++) {
+			currentNumber = topNumbersArray[i][j];
+
+			if (currentNumber < 10) {
+				topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2 + 1] = IntToChar(currentNumber);
+				continue;
+			}
+
+			topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2 + 1] = IntToChar(currentNumber % 10);
+			currentNumber /= 10;
+			topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2] = IntToChar(currentNumber);
+		}
+	}
+
+	return topNumbersArrayGraphical;
+}
+
+char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int columns, int& width, int& height) {
+	int sideNumbersArrayGreatestNumber = GreatestNumberInMatrix(sideNumbersArray, rows, columns),
+		sideNumbersArrayGreatestNumberLength = LengthOf(sideNumbersArrayGreatestNumber),
+		longestNumberLengthWithSpace = sideNumbersArrayGreatestNumberLength + 1;
+
+	width = columns * longestNumberLengthWithSpace + TERMINATING_ZERO_LENGTH;
+	height = rows;
+
+	bool columnIsEmpty = false;
+	for (size_t i = 0; i < columns; i++) {
+		columnIsEmpty = true;
+
+		for (size_t j = 0; j < rows; j++) {
+			if (sideNumbersArray[j][i] > 0) {
+				columnIsEmpty = false;
+				break;
+			}
+		}
+
+		if (columnIsEmpty) {
+			width -= longestNumberLengthWithSpace;
+		} else {
+			break;
+		}
+	}
+
+	int lastEmptySpace = width - 1;
+	char** sideNumbersArrayGraphical = new char* [height] {};
+
+	for (size_t i = 0; i < height; i++) {
+		sideNumbersArrayGraphical[i] = new char[width] {};
+		for (size_t j = 0; j < lastEmptySpace; j++) {
+			sideNumbersArrayGraphical[i][j] = ' ';
+		}
+	}
+
+	int currentNumber = 0,
+		widthAndColumnsDifference = columns - width / longestNumberLengthWithSpace;
+	for (int i = 0; i < height; i++) {
+		for (size_t j = columns - 1; j >= widthAndColumnsDifference; j--) {
+			currentNumber = sideNumbersArray[i][j];
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * 2 + 1] = IntToChar(currentNumber % 10);
+
+			currentNumber /= 10;
+			if (currentNumber == 0) {
+				continue;
+			}
+
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * 2] = IntToChar(currentNumber);
+		}
+	}
+
+	return sideNumbersArrayGraphical;
+}
+
+void PutTogetherGraphicalNonogram(char** graphicalNonogram, int graphicalNonogramHeight, int graphicalNonogramWidth, char** topNumbersArrayGraphical, int topNumbersArrayGraphicalHeight, int topNumbersArrayGraphicalWidth, char** sideNumbersArrayGraphical, int sideNumbersArrayGraphicalHeight, int sideNumbersArrayGraphicalWidth) {
+	for (size_t i = 0; i < topNumbersArrayGraphicalHeight; i++) {
+		for (size_t j = 0; j < topNumbersArrayGraphicalWidth; j++) {
+			graphicalNonogram[i][j + sideNumbersArrayGraphicalWidth] = topNumbersArrayGraphical[i][j];
+		}
+	}
+
+	int offset = 0;
+	for (size_t i = 0; i < sideNumbersArrayGraphicalHeight; i++) {
+		offset = i + topNumbersArrayGraphicalHeight + 1;
+		for (size_t j = 0; j < sideNumbersArrayGraphicalWidth; j++) {
+			graphicalNonogram[offset][j] = sideNumbersArrayGraphical[i][j];
+		}
+	}
+
+	for (size_t i = topNumbersArrayGraphicalHeight; i < graphicalNonogramHeight; i++) {
+		graphicalNonogram[i][sideNumbersArrayGraphicalWidth - 1] = '|';
+		graphicalNonogram[i][graphicalNonogramWidth - 2] = '|';
+	}
+
+	for (size_t i = sideNumbersArrayGraphicalWidth; i < graphicalNonogramWidth - 2; i++) {
+		graphicalNonogram[topNumbersArrayGraphicalHeight][i] = '=';
+		graphicalNonogram[graphicalNonogramHeight - 1][i] = '=';
+	}
+}
+
+char** GetGraphicalNonogram(bool** nonogramSolution, int nonogramSize, int& graphicalNonogramHeight, int& offsetX, int& offsetY) {
+	int numbersArrayRows = nonogramSize / 2,
+		numbersArrayColumns = nonogramSize;
+	if (nonogramSize & 1) numbersArrayRows++;
+
+	int** topNumbersArray = GetTopNumbersArray(numbersArrayRows, numbersArrayColumns, nonogramSolution, nonogramSize);
+	int** sideNumbersArray = GetSideNumbersArray(numbersArrayColumns, numbersArrayRows, nonogramSolution, nonogramSize);
+
+	int topNumbersArrayGraphicalWidth = 0,
+		topNumbersArrayGraphicalHeight = 0,
+		sideNumbersArrayGraphicalWidth = 0,
+		sideNumbersArrayGraphicalHeight = 0;
+
+
+	char** topNumbersArrayGraphical = GetTopNumbersArrayGraphical(topNumbersArray, numbersArrayRows, numbersArrayColumns, topNumbersArrayGraphicalWidth, topNumbersArrayGraphicalHeight);
+	char** sideNumbersArrayGraphical = GetSideNumbersArrayGraphical(sideNumbersArray, numbersArrayColumns, numbersArrayRows, sideNumbersArrayGraphicalWidth, sideNumbersArrayGraphicalHeight);
+
+	DeleteMatrix(topNumbersArray, numbersArrayRows);
+	DeleteMatrix(sideNumbersArray, numbersArrayColumns);
+
+	graphicalNonogramHeight = topNumbersArrayGraphicalHeight + sideNumbersArrayGraphicalHeight + 2;
+	int graphicalNonogramWidth = topNumbersArrayGraphicalWidth + sideNumbersArrayGraphicalWidth + TERMINATING_ZERO_LENGTH;
+
+	char** graphicalNonogram = new char* [graphicalNonogramHeight] {};
+
+	int lastEmptySpace = graphicalNonogramWidth - 1;
+	for (size_t i = 0; i < graphicalNonogramHeight; i++) {
+		graphicalNonogram[i] = new char[graphicalNonogramWidth] {};
+		for (size_t j = 0; j < lastEmptySpace; j++) {
+			graphicalNonogram[i][j] = ' ';
+		}
+	}
+
+	offsetX = sideNumbersArrayGraphicalWidth;
+	offsetY = topNumbersArrayGraphicalHeight + 1;
+
+	PutTogetherGraphicalNonogram(graphicalNonogram, graphicalNonogramHeight, graphicalNonogramWidth, topNumbersArrayGraphical, topNumbersArrayGraphicalHeight, topNumbersArrayGraphicalWidth, sideNumbersArrayGraphical, sideNumbersArrayGraphicalHeight, sideNumbersArrayGraphicalWidth);
+
+	DeleteMatrix(topNumbersArrayGraphical, topNumbersArrayGraphicalHeight);
+	DeleteMatrix(sideNumbersArrayGraphical, sideNumbersArrayGraphicalHeight);
 
 	return graphicalNonogram;
 }
@@ -535,7 +673,7 @@ bool NonogramsMatch(int** nonogram, bool** nonogramSolution, int nonogramSize) {
 	return true;
 }
 
-void UpdateGraphicalNonogram(char** graphicalNonogram, int** nonogram, int nonogramSize, int firstSquareX, int firstSquareY) {
+void UpdateGraphicalNonogram(char** graphicalNonogram, int** nonogram, int nonogramSize, int offsetX, int offsetY) {
 	char ch1 = TERMINATING_ZERO,
 		ch2 = TERMINATING_ZERO;
 
@@ -558,8 +696,8 @@ void UpdateGraphicalNonogram(char** graphicalNonogram, int** nonogram, int nonog
 					break;
 			}
 
-			graphicalNonogram[firstSquareX + i][firstSquareY + 2 * j] = ch1;
-			graphicalNonogram[firstSquareX + i][firstSquareY + 2 * j + 1] = ch2;
+			graphicalNonogram[offsetY + i][offsetX + 2 * j] = ch1;
+			graphicalNonogram[offsetY + i][offsetX + 2 * j + 1] = ch2;
 		}
 	}
 }
@@ -586,8 +724,11 @@ void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, b
 		return;
 	}
 
-	int graphicalNonogramSize = 0;
-	char** graphicalNonogram = GetGraphicalNonogram(nonogramSolution, nonogramSize, graphicalNonogramSize);
+	int graphicalNonogramHeight = 0,
+		offsetX = 0,
+		offsetY = 0;
+	char** graphicalNonogram = GetGraphicalNonogram(nonogramSolution, nonogramSize, graphicalNonogramHeight, offsetX, offsetY);
+	UpdateGraphicalNonogram(graphicalNonogram, nonogram, nonogramSize, offsetX, offsetY);
 
 	char userInput[INPUT_MAX_LENGTH]{};
 
@@ -598,18 +739,18 @@ void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, b
 			return;
 		}
 
-		DisplayNonogram(graphicalNonogram, graphicalNonogramSize);
+		DisplayNonogram(graphicalNonogram, graphicalNonogramHeight);
 		if (difficultyLevel == FIRST_LEVEL) {
 			std::cout << "Enter input in this format: <row> <column> <state(e/f)>\n";
 		}
 		std::cin.getline(userInput, INPUT_MAX_LENGTH);
 
 		UpdateNonogram(userInput, nonogram, nonogramSolution, nonogramSize, playerMistakes);
-		UpdateGraphicalNonogram(graphicalNonogram, nonogram, nonogramSize, 1, 1);
+		UpdateGraphicalNonogram(graphicalNonogram, nonogram, nonogramSize, offsetX, offsetY);
 
 		if (NonogramsMatch(nonogram, nonogramSolution, nonogramSize)) {
 			difficultyLevel++;
-			DisplayNonogram(graphicalNonogram, graphicalNonogramSize);
+			DisplayNonogram(graphicalNonogram, graphicalNonogramHeight);
 			std::cout << "Congrats! You have successfully guessed the nonogram!\n";
 			PauseConsole();
 			return;
