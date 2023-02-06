@@ -13,6 +13,7 @@ const char EXIT_STRING[] = "exit";
 const char ZERO_CHAR = '0';
 const char TERMINATING_ZERO = '\0';
 const char LOGIN_PROMPT[] = "Enter your username to login: ";
+const char DIFFICULTY_LEVEL_PROMPT[] = "Choose your level of difficulty from the given below:\n";
 const char INVALID_INPUT_ERROR[] = "Error: Invalid input.\n";
 const char LOGIN_ERROR[] = "Username is not registered.\n";
 const char NEW_USER_PROMPT[] = "Do you want to register user? [y/n]\n";

@@ -107,31 +107,31 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, int& allow
 	nonogram = GetNonogramFromUserTxt(username, difficultyLevel, allowedMistakes, nonogramSize, nonogramSolution, playerMistakes);
 }
 
-//Needs total rework
-int DifficultyMenu(int difficultyLevel) {
-	int userChoice = 0;
+void DisplayDifficultyMenu(int difficultyLevel) {
+	ClearConsole();
+
+	std::cout << DIFFICULTY_LEVEL_PROMPT;
+	for (size_t i = 1; i <= difficultyLevel; i++) {
+		std::cout << i << " ";
+	}
+	std::cout << std::endl << "Your choice: ";
+}
+
+bool DifficultyChoiseIsValid(const char* userInput, int difficultyLevel) {
+	char firstChar = userInput[0];
+	return userInput[1] == TERMINATING_ZERO && firstChar > ZERO_CHAR && firstChar <= IntToChar(difficultyLevel);
+}
+
+int DifficultyMenuChoice(int difficultyLevel) {
 	char userInput[INPUT_MAX_LENGTH]{};
 
 	do {
-		//will move to a separate function
-		{
-			ClearConsole();
-			std::cout << "Choose your level of difficulty from the given below:" << std::endl;
-			for (size_t i = 1; i <= difficultyLevel; i++) {
-				std::cout << i << " ";
-			}
-			std::cout << std::endl << "Your choice: ";
-		}
+		DisplayDifficultyMenu(difficultyLevel);
 
 		std::cin.getline(userInput, 100);
+	} while (!DifficultyChoiseIsValid(userInput, difficultyLevel));
 
-		if (userInput[1] == TERMINATING_ZERO) {
-			userChoice = CharToInt(userInput[0]);
-		}
-
-	} while (userChoice <= 0 || userChoice > difficultyLevel);
-
-	return userChoice;
+	return CharToInt(userInput[0]);
 }
 
 char* GetRandomNonogramTxtPath(int difficultyLevel) {
@@ -262,7 +262,7 @@ void StartNewNonogram(const char* username, int& difficultyLevel, int& allowedMi
 		difficultyLevel = GetDifficultyLevelFromUserTxt(username);
 	}
 
-	int difficultyChoice = DifficultyMenu(difficultyLevel);
+	int difficultyChoice = DifficultyMenuChoice(difficultyLevel);
 	nonogramSolution = RandomNonogram(difficultyChoice, allowedMistakes, nonogramSize);
 
 	nonogram = new int* [nonogramSize] {};
