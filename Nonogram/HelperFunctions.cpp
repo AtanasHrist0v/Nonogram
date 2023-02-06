@@ -146,3 +146,31 @@ char* IntToString(int number) {
 
 	return numberString;
 }
+
+void DeleteMatrix(int** matrix, int size) {
+	for (size_t i = 0; i < size; i++) {
+		delete[] matrix[i];
+	}
+	delete[] matrix;
+}
+
+void DeleteMatrix(char** matrix, int size) {
+	for (size_t i = 0; i < size; i++) {
+		delete[] matrix[i];
+	}
+	delete[] matrix;
+}
+
+int GreatestNumberInMatrix(int** matrix, int height, int width) {
+	int greatestNumber = matrix[0][0];
+
+	for (size_t i = 0; i < height; i++) {
+		for (size_t j = 0; j < width; j++) {
+			if (matrix[i][j] > greatestNumber) {
+				greatestNumber = matrix[i][j];
+			}
+		}
+	}
+
+	return greatestNumber;
+}
