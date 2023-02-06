@@ -127,8 +127,8 @@ int DifficultyMenuChoice(int difficultyLevel) {
 
 	do {
 		DisplayDifficultyMenu(difficultyLevel);
-
 		std::cin.getline(userInput, 100);
+
 	} while (!DifficultyChoiseIsValid(userInput, difficultyLevel));
 
 	return CharToInt(userInput[0]);
@@ -651,7 +651,6 @@ void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSoluti
 			playerMistakes++;
 			std::cout << "You've made a mistake.\n";
 			PauseConsole();
-			//break;
 			return;
 		default:
 			//std::cout << "Wrong input.\n";
@@ -734,12 +733,9 @@ void UpdateGraphicalNonogram(char** graphicalNonogram, int** nonogram, int nonog
 
 void PlayNonogram(int& difficultyLevel, int allowedMistakes, int nonogramSize, bool** nonogramSolution, int& playerMistakes, int** nonogram) {
 	if (nonogram == nullptr) {
-		//std::cout << NULLPTR_ERROR;
-		//PauseConsole();
 		return;
 	}
 
-	//not sure
 	if (playerMistakes > allowedMistakes) {
 		ClearConsole();
 		std::cout << "You have made too many mistakes, you can't continue playing this nonogram.\n";
