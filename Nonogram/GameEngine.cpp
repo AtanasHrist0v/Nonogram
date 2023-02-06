@@ -402,17 +402,23 @@ char** GetTopNumbersArrayGraphical(int** topNumbersArray, int rows, int columns,
 
 	int currentNumber = 0,
 		rowsAndHeightDifference = rows - height;
+	char currentNumberChar = TERMINATING_ZERO;
 	for (int i = rows - 1; i >= rowsAndHeightDifference; i--) {
 		for (size_t j = 0; j < columns; j++) {
 			currentNumber = topNumbersArray[i][j];
+			currentNumberChar = ' ';
 
-			if (currentNumber < 10) {
-				topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2 + 1] = IntToChar(currentNumber);
+			if (currentNumber != 0) {
+				currentNumberChar = IntToChar(currentNumber % 10);
+			}
+
+			topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2 + 1] = currentNumberChar;
+			currentNumber /= 10;
+
+			if (currentNumber == 0) {
 				continue;
 			}
 
-			topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2 + 1] = IntToChar(currentNumber % 10);
-			currentNumber /= 10;
 			topNumbersArrayGraphical[i - rowsAndHeightDifference][j * 2] = IntToChar(currentNumber);
 		}
 	}
@@ -425,7 +431,7 @@ char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int column
 		sideNumbersArrayGreatestNumberLength = LengthOf(sideNumbersArrayGreatestNumber),
 		longestNumberLengthWithSpace = sideNumbersArrayGreatestNumberLength + 1;
 
-	width = columns * longestNumberLengthWithSpace + TERMINATING_ZERO_LENGTH;
+	width = columns * longestNumberLengthWithSpace;
 	height = rows;
 
 	bool columnIsEmpty = false;
@@ -446,7 +452,11 @@ char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int column
 		}
 	}
 
-	int lastEmptySpace = width - 1;
+	int lastEmptySpace = width - 1,
+		widthAndColumnsDifference = columns - width / longestNumberLengthWithSpace;
+
+	width += TERMINATING_ZERO_LENGTH;
+
 	char** sideNumbersArrayGraphical = new char* [height] {};
 
 	for (size_t i = 0; i < height; i++) {
@@ -456,19 +466,26 @@ char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int column
 		}
 	}
 
-	int currentNumber = 0,
-		widthAndColumnsDifference = columns - width / longestNumberLengthWithSpace;
+	int currentNumber = 0;
+	char currentNumberChar = TERMINATING_ZERO;
+
 	for (int i = 0; i < height; i++) {
 		for (size_t j = columns - 1; j >= widthAndColumnsDifference; j--) {
 			currentNumber = sideNumbersArray[i][j];
-			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * 2 + 1] = IntToChar(currentNumber % 10);
+			currentNumberChar = ' ';
 
+			if (currentNumber != 0) {
+				currentNumberChar = IntToChar(currentNumber % 10);
+			}
+
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * (longestNumberLengthWithSpace + 1) + 1] = currentNumberChar;
 			currentNumber /= 10;
+
 			if (currentNumber == 0) {
 				continue;
 			}
 
-			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * 2] = IntToChar(currentNumber);
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * (longestNumberLengthWithSpace + 1)] = IntToChar(currentNumber);
 		}
 	}
 
@@ -563,11 +580,16 @@ void DisplayNonogram(char** nonogram, int nonogramSize) {
 }
 
 int ExtractNumberFromString(const char* string, int startIndex, int endIndex) {
-	int number = 0;
+	int number = 0,
+		multiplier = 1;
 
-	for (int i = endIndex - 1; i >= startIndex; i--) {
-		number *= 10;
-		number += CharToInt(string[i]);
+	for (size_t i = startIndex + 1; i < endIndex; i++) {
+		multiplier *= 10;
+	}
+
+	for (int i = startIndex; i < endIndex; i++) {
+		number += multiplier * CharToInt(string[i]);
+		multiplier /= 10;
 	}
 
 	return number;
@@ -602,6 +624,10 @@ void ExtractDataFromUserInput(const char* userInput, int& x, int& y, char& state
 	state = userInput[secondSpaceIndex + 1];
 }
 
+bool UserInputCoordinatesAreValid(int x, int y, int nonogramSize) {
+	return x >= 0 && y >= 0 && x < nonogramSize&& y < nonogramSize;
+}
+
 void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSolution, int nonogramSize, int& playerMistakes) {
 	int x = 0,
 		y = 0;
@@ -609,7 +635,7 @@ void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSoluti
 
 	ExtractDataFromUserInput(userInput, x, y, state);
 
-	if (x >= nonogramSize || y >= nonogramSize) {
+	if (!UserInputCoordinatesAreValid(x, y, nonogramSize)) {
 		//std::cout << "Wrong input.\n";
 		//PauseConsole();
 		return;
