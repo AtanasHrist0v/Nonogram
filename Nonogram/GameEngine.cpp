@@ -99,7 +99,7 @@ void ContinueLastNonogram(const char* username, int& difficultyLevel, int& allow
 	}
 
 	if (UserTxtIsEmpty(username)) {
-		std::cout << NO_SAVED_GAME_ERROR;
+		std::cout << NO_SAVED_GAME_MESSAGE;
 		PauseConsole();
 		return;
 	}
