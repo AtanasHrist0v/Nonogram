@@ -452,11 +452,10 @@ char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int column
 		}
 	}
 
-	int lastEmptySpace = width - 1,
-		widthAndColumnsDifference = columns - width / longestNumberLengthWithSpace;
-
+	int widthAndColumnsDifference = columns - width / longestNumberLengthWithSpace;
 	width += TERMINATING_ZERO_LENGTH;
 
+	int lastEmptySpace = width - 1;
 	char** sideNumbersArrayGraphical = new char* [height] {};
 
 	for (size_t i = 0; i < height; i++) {
@@ -478,14 +477,14 @@ char** GetSideNumbersArrayGraphical(int** sideNumbersArray, int rows, int column
 				currentNumberChar = IntToChar(currentNumber % 10);
 			}
 
-			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * (longestNumberLengthWithSpace + 1) + 1] = currentNumberChar;
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference + 1) * longestNumberLengthWithSpace - 1] = currentNumberChar;
 			currentNumber /= 10;
 
 			if (currentNumber == 0) {
 				continue;
 			}
 
-			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference) * (longestNumberLengthWithSpace + 1)] = IntToChar(currentNumber);
+			sideNumbersArrayGraphical[i][(j - widthAndColumnsDifference + 1) * longestNumberLengthWithSpace - 2] = IntToChar(currentNumber);
 		}
 	}
 
