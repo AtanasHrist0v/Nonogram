@@ -610,8 +610,8 @@ void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSoluti
 	ExtractDataFromUserInput(userInput, x, y, state);
 
 	if (x >= nonogramSize || y >= nonogramSize) {
-		std::cout << "Wrong input.\n";
-		PauseConsole();
+		//std::cout << "Wrong input.\n";
+		//PauseConsole();
 		return;
 	}
 
@@ -631,8 +631,8 @@ void UpdateNonogram(const char* userInput, int** nonogram, bool** nonogramSoluti
 			//break;
 			return;
 		default:
-			std::cout << "Wrong input.\n";
-			PauseConsole();
+			//std::cout << "Wrong input.\n";
+			//PauseConsole();
 			return;
 	}
 
