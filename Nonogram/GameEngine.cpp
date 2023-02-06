@@ -233,8 +233,6 @@ int GetDifficultyLevelFromUserTxt(const char* username) {
 		return -1;
 	}
 
-	//char currentLine[INPUT_MAX_LENGTH]{};
-	//reader.getline(currentLine, INPUT_MAX_LENGTH);
 	char difficultyLevel = '\0';
 	reader >> difficultyLevel;
 
